@@ -1,3 +1,17 @@
+{
+          "id": "0001",
+          "note": "第一個note",
+          "date": "2022/05/25",
+          "isCompleted": false
+        },
+        {
+          "id": "0002",
+          "note": "第二個note",
+          "date": "2022/05/26",
+          "isCompleted": true
+        }
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
