@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TEST</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="title"></div>
+    <div id="root"></div>
+    <div id="btnToggle"></div>
+
+    <script type="text/babel">
+      const title = ReactDOM.createRoot(document.getElementById("title"));
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+
+      const data = {
+        title: "TEST",
+        list: [{ id: 1, item: "", isComplete: false }, {}],
+      };
+
+      function Hyo(props) {
+        return <h1>hyo! {props.name}</h1>;
+      }
+
+      function Welcome(props) {
+        return <h3>こんにちは {props.name}</h3>;
+      }
+      let hyoName = "tuco";
+
+      function ShowWelcome(props) {
+        return (
+          <div>
+            <Welcome name={hyoName} />
+            <Welcome name="耶" />
+          </div>
+        );
+      }
+
+      let arr = ["hyo", 2, 3];
+      const showArr = arr.map((item) => <li>{item}</li>);
+
+      title.render(<h1>{data.title}</h1>);
+      // root.render(<ShowWelcome />);
+      root.render(showArr);
+
+      //-----
+
+      class Toggle extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { isToggleOn: true };
+
+          // This binding is necessary to make `this` work in the callback
+          this.handleClick = this.handleClick.bind(this);
+        }
+
+        handleClick() {
+          this.setState((prevState) => ({
+            isToggleOn: !prevState.isToggleOn,
+          }));
+        }
+
+        render() {
+          return (
+            <div>
+                <input value="1" disabled />
+                <br />
+                <button onClick={this.handleClick}>
+                    {this.state.isToggleOn ? "ON" : "OFF"}
+              </button>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<Toggle />, document.getElementById("btnToggle"));
+    </script>
+  </body>
+</html>
