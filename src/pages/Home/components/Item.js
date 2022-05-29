@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 const Item = ({
   id,
   noteData,
@@ -8,7 +6,6 @@ const Item = ({
   submittingStatus,
   isCompleted,
 }) => {
-  const [canModify, setCanModify] = useState('');
   
   function deleteItem() {
     submittingStatus.current = true;
@@ -21,7 +18,7 @@ const Item = ({
   return (
     <div>
       <input type="checkbox"></input>
-      <input id="doToItem" type="text" defaultValue={noteData}></input>
+      <input type="text" defaultValue={noteData}></input>
       {date}
       <button onClick={deleteItem}>刪除</button>
       <hr />

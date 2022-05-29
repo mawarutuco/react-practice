@@ -3,30 +3,22 @@ import { v4 } from "uuid";
 
 const Edit = ({ add, submittingStatus }) => {
   const [note, setNote] = useState("");
-
-  function changeNote(e) {
-    setNote(e.target.value);
-  }
+  const changeNote = (e) => setNote(e.target.value);
 
   const [date, setDate] = useState("");
+  const changeDate = (e) => setDate(e.target.value);
 
-  function changeDate(e) {
-    setDate(e.target.value);
-  }
-
-  function addItem() {
+  const addItem = () => {
+    const pushItem = (prev) => [
+      { id: v4(), note, date, isCompleted: false },
+      ...prev,
+    ];
     submittingStatus.current = true;
-    add(function (prev) {
-      setNote("");
-      return [{ id: v4(), note, date, isCompleted: false }, ...prev];
-    });
-  }
-
-  useEffect(() => {}, []);
+    add(pushItem);
+  };
 
   return (
     <div>
-      <h1>ToDoList</h1>
       <p>記事：</p>
       <input type="text" value={note} onChange={changeNote}></input>
       <p>預計完成日：</p>

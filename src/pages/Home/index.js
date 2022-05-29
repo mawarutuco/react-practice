@@ -35,6 +35,7 @@ const Home = () => {
 
   return (
     <div>
+      <h1>ToDoList</h1>
       <Edit add={setData} submittingStatus={submittingStatus} />
       <hr />
       <List
