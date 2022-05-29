@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <style>
+    .done {
+      text-decoration: line-through;
+    }
+  </style>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      function ToDoList() {
+        const [onlyId, setId] = React.useState(3);
+        const [title, setTitle] = React.useState("ToDoList");
+        const [list, setList] = React.useState([
+          { id: 0, item: "看龍貓", done: false },
+          { id: 1, item: "看千尋", done: true },
+        ]);
+
+        const completeHandler = (id) => {
+          const nowStateList = list.map((toDoItem) => {
+            if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+            return toDoItem;
+          });
+          setList(nowStateList);
+        };
+
+        const deleteHandler = (id) => {
+          const nowStateList = list.filter((toDoItem) => {
+            return toDoItem.id !== id;
+          });
+          setList(nowStateList);
+        };
+
+        const addItem = () => {
+          const pushItem = (prev) => [
+            { id: onlyId, item: inputItem, done: false },
+            ...prev,
+          ];
+          setId(onlyId + 1);
+          setInputItem("");
+          setList(pushItem);
+          document.querySelector('input[placeHolder="待辦事項"]').focus();
+        };
+
+        const Title = () => <h1>{title}</h1>;
+
+        const Edit = () => {
+          return (
+            <div>
+              <input
+                type="text"
+                placeHolder="待辦事項"
+                onChange={inputItemChange}
+                value={inputItem}
+              />
+              <button onClick={() => addItem()}>新增</button>
+            </div>
+          );
+        };
+
+        const List = () => {
+          return (
+            <ul>
+              {list.map((el) => {
+                return <Item el={el} />;
+              })}
+            </ul>
+          );
+        };
+
+        const Item = ({ el }) => {
+          return (
+            <li key={el.id}>
+              <input
+                type="checkbox"
+                checked={el.done}
+                onChange={() => completeHandler(el.id)}
+              />
+              <input
+                value={el.item}
+                className={el.done ? "done" : ""}
+                disabled={el.done ? "done" : ""}
+              />
+              <button onClick={() => deleteHandler(el.id)}>刪除</button>
+              <hr />
+            </li>
+          );
+        };
+
+        const [inputItem, setInputItem] = React.useState();
+        const inputItemChange = function (e) {
+          setInputItem(e.target.value);
+        };
+
+        const [item, setToDoItem] = React.useState(list.item);
+        const toDoItemChange = function (e) {
+          setToDoItem(e.target.value);
+          console.log(list.item);
+          setList(list);
+        };
+
+        return (
+          <div>
+            <Title />
+            {/* <Edit/>*/}
+            {/*<List />*/}
+            <input
+              type="text"
+              placeHolder="待辦事項"
+              onChange={inputItemChange}
+              value={inputItem}
+            />
+            <button onClick={addItem}>新增</button>
+            <ul>
+              {list.map((el) => {
+                return (
+                  <li key={el.id}>
+                    <input
+                      type="checkbox"
+                      checked={el.done}
+                      onChange={() => completeHandler(el.id)}
+                    />
+                    <input
+                      value={el.item}
+                      className={el.done ? "done" : ""}
+                      disabled={el.done ? "done" : ""}
+                      onChange={toDoItemChange}
+                    />
+                    <button onClick={() => deleteHandler(el.id)}>刪除</button>
+                    <hr />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<ToDoList />, document.getElementById("app"));
+    </script>
+  </body>
+</html>

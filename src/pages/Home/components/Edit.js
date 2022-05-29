@@ -10,7 +10,7 @@ const Edit = ({ add, submittingStatus }) => {
 
   const addItem = () => {
     const pushItem = (prev) => [
-      { id: v4(), note, date, isCompleted: false },
+      { id: v4(), note, date, },
       ...prev,
     ];
     submittingStatus.current = true;
