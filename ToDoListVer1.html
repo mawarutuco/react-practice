@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDoList</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+
+  <style>
+    .done {
+      text-decoration: line-through;
+    }
+  </style>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+
+      class ToDoListIndex extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            id: 2,
+            title: "ToDoList",
+            inputItem: "",
+            list: [
+              { id: 0, item: "看龍貓", done: false },
+              { id: 1, item: "看千尋", done: true },
+            ],
+          };
+          this.completeHandler = this.completeHandler.bind(this);
+          this.deleteHandler = this.deleteHandler.bind(this);
+          this.addItem = this.addItem.bind(this);
+          this.inputHandler = this.inputHandler.bind(this);
+          this.doToItemChange = this.doToItemChange.bind(this);
+        }
+
+        completeHandler(id) {
+          const nowStateList = this.state.list.map((toDoItem) => {
+            if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+            return toDoItem;
+          });
+          this.setState({ list: nowStateList });
+        }
+
+        deleteHandler(id) {
+          const nowStateList = this.state.list.filter((toDoItem) => {
+            return toDoItem.id !== id;
+          });
+          this.setState({ list: nowStateList });
+        }
+
+        addItem = () => {
+          this.setState({
+            inputItem: "",
+            list: this.state.list.concat({
+              id: this.state.id++,
+              item: this.state.inputItem,
+              done: false,
+            }),
+          });
+          document.querySelector('input[placeHolder="待辦事項"]').focus();
+        };
+
+        inputHandler = (e) => {
+          this.setState({ inputItem: e.target.value });
+        };
+
+        Title = () => <h1>{this.state.title}</h1>;
+
+        Edit = () => {
+          return (
+            <div>
+              <input
+                placeHolder="待辦事項"
+                onChange={this.inputHandler}
+                value={this.state.inputItem}
+              />
+              <button onClick={() => this.addItem()}>新增</button>
+            </div>
+          );
+        };
+
+        List = () => {
+          return (
+            <ul>
+              {this.state.list.map((el) => {
+                return <this.Item el={el} />;
+              })}
+            </ul>
+          );
+        };
+
+        Item = ({ el }) => {
+          return (
+            <li key={el.id}>
+              <input
+                type="checkbox"
+                checked={el.done}
+                onChange={() => this.completeHandler(el.id)}
+              />
+              <input
+                value={el.item}
+                className={el.done ? "done" : ""}
+                disabled={el.done ? "done" : ""}
+                onChange={this.doToItemChange}
+              />
+              <button onClick={() => this.deleteHandler(el.id)}>刪除</button>
+              <hr />
+            </li>
+          );
+        };
+
+        //想改list裡面的內容
+        doToItemChange = (e) => {
+          console.log(e.target.value);
+          console.log(this.state.list);
+          this.setState({ item: e.target.value });
+          this.setState({ list: this.state.list });
+        };
+
+        render() {
+          return (
+            <div>
+              <this.Title />
+              <this.Edit />
+              <this.List />
+            </div>
+          );
+        }
+      }
+
+      app.render(<ToDoListIndex />);
+    </script>
+  </body>
+</html>
