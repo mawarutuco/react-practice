@@ -23,6 +23,7 @@
     <div id="title"></div>
     <div id="root"></div>
     <div id="btnToggle"></div>
+    <div id="getNowTime"></div>
 
     <script type="text/babel">
       const title = ReactDOM.createRoot(document.getElementById("title"));
@@ -60,35 +61,32 @@
 
       //-----
 
-      class Toggle extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = { isToggleOn: true };
+      const Toggle = () => {
+        const [isToggleOn, setToggleBtn] = React.useState(true);
 
-          // This binding is necessary to make `this` work in the callback
-          this.handleClick = this.handleClick.bind(this);
-        }
+        const handleClick = () => {
+          setToggleBtn(!isToggleOn);
+        };
 
-        handleClick() {
-          this.setState((prevState) => ({
-            isToggleOn: !prevState.isToggleOn,
-          }));
-        }
-
-        render() {
-          return (
-            <div>
-                <input value="1" disabled />
-                <br />
-                <button onClick={this.handleClick}>
-                    {this.state.isToggleOn ? "ON" : "OFF"}
-              </button>
-            </div>
-          );
-        }
-      }
+        return (
+          <button onClick={handleClick}>{isToggleOn ? "ON" : "OFF"}</button>
+        );
+      };
 
       ReactDOM.render(<Toggle />, document.getElementById("btnToggle"));
+
+      //----------------------------------------------------------------
+
+      const Clock = (props) => (
+        <h3>現在時間:{props.now.toLocaleTimeString()}</h3>
+      );
+
+      const getNowTime = ReactDOM.createRoot(
+        document.getElementById("getNowTime")
+      );
+
+      const tick = () => getNowTime.render(<Clock now={new Date()} />);
+      setInterval(tick, 1000);
     </script>
   </body>
 </html>

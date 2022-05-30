@@ -53,21 +53,8 @@
 
         //設useState
         const [title, setTitle] = React.useState("ToDoList");
-        const [inputItem, setInputItem] = React.useState();
         const [onlyId, setId] = React.useState(data.id);
         const [list, setList] = React.useState(data.list);
-
-        //新增待辦事項
-        addItem = () => {
-          const pushItem = (prev) => [
-            { id: onlyId, item: inputItem, done: false },
-            ...prev,
-          ];
-          setId(onlyId + 1);
-          setInputItem("");
-          setList(pushItem);
-          document.querySelector('input[placeHolder="待辦事項"]').focus();
-        };
 
         //打勾完成事項
         const completeHandler = (id) => {
@@ -102,11 +89,6 @@
           setList(nowStateList);
         };
 
-        //input成雙向資料流
-        const inputItemChange = (e) => {
-          setInputItem(e.target.value);
-        };
-
         //未完成  (想list todo可以修改)
         const [item, setToDoItem] = React.useState(list.item);
         const toDoItemChange = function (e) {
@@ -118,6 +100,32 @@
         const Title = () => <h1>{title}</h1>;
 
         const Edit = () => {
+          const [inputItem, setInputItem] = React.useState();
+
+          //input成雙向資料流
+          const inputItemChange = (e) => {
+            setInputItem(e.target.value);
+          };
+
+          React.useEffect(() => {
+            let el = document.querySelector('input[placeHolder="待辦事項"]');
+            el.focus();
+            el.onkeydown = (ev) => {
+              if (ev.keyCode == 13) addItem();
+            };
+          }, [inputItem]);
+
+          //新增待辦事項
+          addItem = () => {
+            const pushItem = (prev) => [
+              { id: onlyId, item: inputItem, done: false },
+              ...prev,
+            ];
+            setId(onlyId + 1);
+            setInputItem("");
+            setList(pushItem);
+          };
+
           return (
             <div>
               <input
@@ -127,7 +135,6 @@
                 value={inputItem}
               />
               <button onClick={() => addItem()}>新增</button>
-              <button onClick={deleteAllDoneItem}>刪除已完成</button>
             </div>
           );
         };
@@ -175,16 +182,7 @@
           <div>
             <Title />
 
-            {/*<Edit />  */}
-            <div>
-              <input
-                type="text"
-                placeHolder="待辦事項"
-                onChange={inputItemChange}
-                value={inputItem}
-              />
-              <button onClick={addItem}>新增</button>
-            </div>
+            <Edit />
 
             <List />
           </div>
@@ -201,7 +199,51 @@
       };
 
       const app = ReactDOM.createRoot(document.getElementById("app"));
-      app.render(<ToDoList />);
+      app.render(
+        <div>
+          <ToDoList />
+        </div>
+      );
+
+      // const themes = {
+      //   light: {
+      //     foreground: "#000000",
+      //     background: "red",
+      //   },
+      //   dark: {
+      //     foreground: "#ffffff",
+      //     background: "blue",
+      //   },
+      // };
+
+      // const ThemeContext = React.createContext(themes.light);
+
+      // function App() {
+      //   return (
+      //     <ThemeContext.Provider value={themes.dark}>
+      //       <Toolbar />
+      //     </ThemeContext.Provider>
+      //   );
+      // }
+
+      // function Toolbar(props) {
+      //   return (
+      //     <div>
+      //       <ThemedButton />
+      //     </div>
+      //   );
+      // }
+
+      // function ThemedButton() {
+      //   const theme = React.useContext(ThemeContext);
+      //   return (
+      //     <button
+      //       style={{ background: theme.background, color: theme.foreground }}
+      //     >
+      //       I am styled by theme context!
+      //     </button>
+      //   );
+      // }
     </script>
   </body>
 </html>
