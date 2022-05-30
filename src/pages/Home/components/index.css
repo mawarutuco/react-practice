@@ -12,6 +12,17 @@ code {
     monospace;
 }
 
-.testGreen{
-  background-color:rgb(202, 255, 202);
+.btn-testGreen {
+  background-color: rgb(202, 255, 202);
+}
+
+
+.btn-flat {
+  background-color: purple;
+  color: white;
+}
+
+.btn-xxl {
+  padding: 1rem 1.5rem;
+  font-size: 1.5rem;
 }
