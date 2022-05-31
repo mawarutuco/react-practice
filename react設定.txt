@@ -1,0 +1,3 @@
+"emmet.includeLanguage":{"javascript":"javascriptreact"}
+
+emmet.trigger =>設定true
