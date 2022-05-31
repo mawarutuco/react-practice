@@ -13,7 +13,7 @@ const Edit = ({ add, submittingStatus }) => {
       { id: v4(), note, date, },
       ...prev,
     ];
-    submittingStatus.current = true;
+    // submittingStatus.current = true;
     add(pushItem);
   };
 
