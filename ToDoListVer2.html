@@ -39,8 +39,6 @@
       //想完成未完成的部分
       //1.list裡面的內容可以修改
 
-      let addItem;
-
       function ToDoList() {
         //資料
         let data = {
@@ -52,78 +50,53 @@
         };
 
         //設useState
-        const [title, setTitle] = React.useState("ToDoList");
-        const [onlyId, setId] = React.useState(data.id);
+        const [onlyId, setId] = React.useState(data.list.length);
         const [list, setList] = React.useState(data.list);
 
-        //打勾完成事項
-        const completeHandler = (id) => {
-          const nowStateList = list.map((toDoItem) => {
-            if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
-            return toDoItem;
-          });
-          setList(nowStateList);
-
-          //   let doneList = [];
-          //   let unDoneList = [];
-          //   list.map((toDoItem) => {
-          //     if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
-
-          //     if (toDoItem.done) doneList.push(toDoItem);
-          //     else unDoneList.push(toDoItem);
-          //   });
-          //   setList([...unDoneList, ...doneList]);
-        };
-
-        //刪除todo
-        const deleteToDoItem = (id) => {
-          const nowStateList = list.filter((toDoItem) => toDoItem.id !== id);
-          setList(nowStateList);
-        };
-
-        //刪除已完成todo
-        const deleteAllDoneItem = () => {
-          const nowStateList = list.filter(
-            (toDoItem) => toDoItem.done === false
-          );
-          setList(nowStateList);
-        };
-
         //未完成  (想list todo可以修改)
-        const [item, setToDoItem] = React.useState(list.item);
-        const toDoItemChange = function (e) {
-          setToDoItem(e.target.value);
-          console.log(list.item);
-          setList(list);
+        // const [item, setToDoItem] = React.useState(list.item);
+        // const toDoItemChange = function (e) {
+        //   setToDoItem(e.target.value);
+        //   setList(list);
+        // };
+
+        const Title = () => {
+          const [title, setTitle] = React.useState("ToDoList");
+          return <h1>{title}</h1>;
         };
-
-        const Title = () => <h1>{title}</h1>;
-
+        
+        const inputItemDom =React.useRef(null);
         const Edit = () => {
-          const [inputItem, setInputItem] = React.useState();
+          const [inputItem, setInputItem] = React.useState("");
 
           //input成雙向資料流
           const inputItemChange = (e) => {
             setInputItem(e.target.value);
           };
 
-          React.useEffect(() => {
-            let el = document.querySelector('input[placeHolder="待辦事項"]');
-            el.focus();
-            el.onkeydown = (ev) => {
-              if (ev.keyCode == 13) addItem();
-            };
-          }, [inputItem]);
-
           //新增待辦事項
-          addItem = () => {
+          const addItem = () => {
+            if ((String(inputItem).trim().length == 0)) {
+              alert("未輸入待辦事項");
+              return;
+            }
+
             const pushItem = (prev) => [
               { id: onlyId, item: inputItem, done: false },
               ...prev,
             ];
+
             setId(onlyId + 1);
             setInputItem("");
             setList(pushItem);
+          };
+
+          React.useEffect(() => {
+              inputItemDom.current.focus();
+            },[inputItem]);
+
+          const enterToAddItem = (ev) => {
+            if (ev.keyCode == 13) addItem();
           };
 
           return (
@@ -133,6 +106,8 @@
                 placeHolder="待辦事項"
                 onChange={inputItemChange}
                 value={inputItem}
+                onKeyUp={enterToAddItem}
+                ref={inputItemDom}
               />
               <button onClick={() => addItem()}>新增</button>
             </div>
@@ -140,6 +115,14 @@
         };
 
         const List = () => {
+          //刪除已完成todo
+          const deleteAllDoneItem = () => {
+            const nowStateList = list.filter(
+              (toDoItem) => toDoItem.done === false
+            );
+            setList(nowStateList);
+          };
+
           return (
             <div>
               <h3>to do</h3>
@@ -160,6 +143,31 @@
         };
 
         const Item = ({ el }) => {
+          //打勾完成事項
+          const completeHandler = (id) => {
+            const nowStateList = list.map((toDoItem) => {
+              if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+              return toDoItem;
+            });
+            setList(nowStateList);
+
+            //   let doneList = [];
+            //   let unDoneList = [];
+            //   list.map((toDoItem) => {
+            //     if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+
+            //     if (toDoItem.done) doneList.push(toDoItem);
+            //     else unDoneList.push(toDoItem);
+            //   });
+            //   setList([...unDoneList, ...doneList]);
+          };
+
+          //刪除todo
+          const deleteToDoItem = (id) => {
+            const nowStateList = list.filter((toDoItem) => toDoItem.id !== id);
+            setList(nowStateList);
+          };
+
           return (
             <li key={el.id}>
               <input
@@ -181,22 +189,11 @@
         return (
           <div>
             <Title />
-
             <Edit />
-
             <List />
           </div>
         );
       }
-
-      //偵測enter事件 做新增todo
-      window.onload = function () {
-        document.querySelector('input[placeHolder="待辦事項"]').onkeydown = (
-          ev
-        ) => {
-          if (ev.keyCode == 13) addItem();
-        };
-      };
 
       const app = ReactDOM.createRoot(document.getElementById("app"));
       app.render(

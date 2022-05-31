@@ -20,19 +20,16 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   </head>
   <body>
-    <div id="title"></div>
     <div id="root"></div>
     <div id="btnToggle"></div>
     <div id="getNowTime"></div>
+    <div id="testRef"></div>
 
     <script type="text/babel">
-      const title = ReactDOM.createRoot(document.getElementById("title"));
-      const root = ReactDOM.createRoot(document.getElementById("root"));
+const { useState, useEffect, useRef, useContext } = React;
 
-      const data = {
-        title: "TEST",
-        list: [{ id: 1, item: "", isComplete: false }, {}],
-      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
 
       function Hyo(props) {
         return <h1>hyo! {props.name}</h1>;
@@ -55,14 +52,13 @@
       let arr = ["hyo", 2, 3];
       const showArr = arr.map((item) => <li>{item}</li>);
 
-      title.render(<h1>{data.title}</h1>);
       // root.render(<ShowWelcome />);
       root.render(showArr);
 
       //-----
 
       const Toggle = () => {
-        const [isToggleOn, setToggleBtn] = React.useState(true);
+        const [isToggleOn, setToggleBtn] = useState(true);
 
         const handleClick = () => {
           setToggleBtn(!isToggleOn);
@@ -73,7 +69,13 @@
         );
       };
 
-      ReactDOM.render(<Toggle />, document.getElementById("btnToggle"));
+      ReactDOM.render(
+        <div>
+          <Toggle />
+          <Toggle />
+        </div>,
+        document.getElementById("btnToggle")
+      );
 
       //----------------------------------------------------------------
 
@@ -87,6 +89,24 @@
 
       const tick = () => getNowTime.render(<Clock now={new Date()} />);
       setInterval(tick, 1000);
+
+      //---------------
+
+      const App = () => {
+        const inputRef = useRef();
+
+        const clickHandler = () => {
+          inputRef.current.focus();
+        };
+        return (
+          <div>
+            <input type="text" ref={inputRef} />
+            <button onClick={clickHandler}>Focus</button>
+          </div>
+        );
+      };
+
+      ReactDOM.render(<App />, document.getElementById("testRef"));
     </script>
   </body>
 </html>
