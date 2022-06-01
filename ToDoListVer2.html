@@ -53,19 +53,12 @@
         const [onlyId, setId] = React.useState(data.list.length);
         const [list, setList] = React.useState(data.list);
 
-        //未完成  (想list todo可以修改)
-        // const [item, setToDoItem] = React.useState(list.item);
-        // const toDoItemChange = function (e) {
-        //   setToDoItem(e.target.value);
-        //   setList(list);
-        // };
-
         const Title = () => {
           const [title, setTitle] = React.useState("ToDoList");
           return <h1>{title}</h1>;
         };
-        
-        const inputItemDom =React.useRef(null);
+
+        const inputItemDom = React.useRef(null);
         const Edit = () => {
           const [inputItem, setInputItem] = React.useState("");
 
@@ -76,7 +69,7 @@
 
           //新增待辦事項
           const addItem = () => {
-            if ((String(inputItem).trim().length == 0)) {
+            if (String(inputItem).trim().length == 0) {
               alert("未輸入待辦事項");
               return;
             }
@@ -92,8 +85,8 @@
           };
 
           React.useEffect(() => {
-              inputItemDom.current.focus();
-            },[inputItem]);
+            inputItemDom.current.focus();
+          }, [inputItem]);
 
           const enterToAddItem = (ev) => {
             if (ev.keyCode == 13) addItem();
@@ -168,19 +161,29 @@
             setList(nowStateList);
           };
 
+
+          //未完成  (想list todo可以修改)
+          // const [item, setToDoItem] = React.useState(list.item);
+          // const editToDoItem = function (e) {
+          //   setToDoItem(e.target.value);
+          // };
+
+          const { id, done, item } = el;
+
           return (
-            <li key={el.id}>
+            <li key={id}>
               <input
                 type="checkbox"
-                checked={el.done}
-                onChange={() => completeHandler(el.id)}
+                checked={done}
+                onChange={() => completeHandler(id)}
               />
               <input
-                value={el.item}
-                className={el.done ? "done" : ""}
-                disabled={el.done ? "done" : ""}
+                value={item}
+                className={done ? "done" : ""}
+                disabled={done ? "done" : ""}
+                onChange={() => editToDoItem(id)}
               />
-              <button onClick={() => deleteToDoItem(el.id)}>刪除</button>
+              <button onClick={() => deleteToDoItem(id)}>刪除</button>
               <hr />
             </li>
           );
