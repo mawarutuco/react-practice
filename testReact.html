@@ -96,11 +96,14 @@ const { useState, useEffect, useRef, useContext } = React;
         const inputRef = useRef();
 
         const clickHandler = () => {
+          console.log(inputRef);
           inputRef.current.focus();
         };
         return (
           <div>
             <input type="text" ref={inputRef} />
+            <input type="text"  />
+            <input type="text"  />
             <button onClick={clickHandler}>Focus</button>
           </div>
         );

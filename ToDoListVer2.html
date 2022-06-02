@@ -36,8 +36,6 @@
     <div id="app"></div>
 
     <script type="text/babel">
-      //想完成未完成的部分
-      //1.list裡面的內容可以修改
 
       function ToDoList() {
         //資料
@@ -58,9 +56,9 @@
           return <h1>{title}</h1>;
         };
 
-        const inputItemDom = React.useRef(null);
         const Edit = () => {
-          const [inputItem, setInputItem] = React.useState("");
+          
+        const [inputItem, setInputItem] = React.useState("");
 
           //input成雙向資料流
           const inputItemChange = (e) => {
@@ -69,10 +67,10 @@
 
           //新增待辦事項
           const addItem = () => {
-            if (String(inputItem).trim().length == 0) {
-              alert("未輸入待辦事項");
-              return;
-            }
+            // if (String(inputItem).trim().length == 0) {
+            //   alert("未輸入待辦事項");
+            //   return;
+            // }
 
             const pushItem = (prev) => [
               { id: onlyId, item: inputItem, done: false },
@@ -84,9 +82,10 @@
             setList(pushItem);
           };
 
-          React.useEffect(() => {
-            inputItemDom.current.focus();
-          }, [inputItem]);
+          const inputRef = React.useRef(null);
+          // React.useEffect(() => {
+          //   inputRef.current.focus();
+          // }, [setInputItem]);
 
           const enterToAddItem = (ev) => {
             if (ev.keyCode == 13) addItem();
@@ -100,7 +99,7 @@
                 onChange={inputItemChange}
                 value={inputItem}
                 onKeyUp={enterToAddItem}
-                ref={inputItemDom}
+                ref={inputRef}
               />
               <button onClick={() => addItem()}>新增</button>
             </div>
@@ -155,18 +154,19 @@
             //   setList([...unDoneList, ...doneList]);
           };
 
+          const modifyToDoItem = (id) => {
+            const nowStateList = list.map((toDoItem) => {
+              if (toDoItem.id === id) toDoItem.item = prompt("編輯");
+              return toDoItem;
+            });
+            setList(nowStateList);
+          };
+
           //刪除todo
           const deleteToDoItem = (id) => {
             const nowStateList = list.filter((toDoItem) => toDoItem.id !== id);
             setList(nowStateList);
           };
-
-
-          //未完成  (想list todo可以修改)
-          // const [item, setToDoItem] = React.useState(list.item);
-          // const editToDoItem = function (e) {
-          //   setToDoItem(e.target.value);
-          // };
 
           const { id, done, item } = el;
 
@@ -177,13 +177,23 @@
                 checked={done}
                 onChange={() => completeHandler(id)}
               />
-              <input
+              <span className={done ? "done" : ""}>{item}</span>
+              <button
+                style={{ display: done ? "none" : "" }}
+                onClick={() => modifyToDoItem(id)}
+              >
+                修改
+              </button>
+              <button onClick={() => deleteToDoItem(id)}>刪除</button>
+              <p></p>
+
+              {/*<input
                 value={item}
                 className={done ? "done" : ""}
                 disabled={done ? "done" : ""}
-                onChange={() => editToDoItem(id)}
-              />
-              <button onClick={() => deleteToDoItem(id)}>刪除</button>
+                // onClick={() => editToDoItem(el)}
+                // onChange={() => toDoItemChange()}
+              />*/}
               <hr />
             </li>
           );
@@ -204,46 +214,6 @@
           <ToDoList />
         </div>
       );
-
-      // const themes = {
-      //   light: {
-      //     foreground: "#000000",
-      //     background: "red",
-      //   },
-      //   dark: {
-      //     foreground: "#ffffff",
-      //     background: "blue",
-      //   },
-      // };
-
-      // const ThemeContext = React.createContext(themes.light);
-
-      // function App() {
-      //   return (
-      //     <ThemeContext.Provider value={themes.dark}>
-      //       <Toolbar />
-      //     </ThemeContext.Provider>
-      //   );
-      // }
-
-      // function Toolbar(props) {
-      //   return (
-      //     <div>
-      //       <ThemedButton />
-      //     </div>
-      //   );
-      // }
-
-      // function ThemedButton() {
-      //   const theme = React.useContext(ThemeContext);
-      //   return (
-      //     <button
-      //       style={{ background: theme.background, color: theme.foreground }}
-      //     >
-      //       I am styled by theme context!
-      //     </button>
-      //   );
-      // }
     </script>
   </body>
 </html>
