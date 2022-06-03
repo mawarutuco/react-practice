@@ -15,15 +15,13 @@ import {
   Col,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./sb-admin-2.min.css";
-import "./index.css";
 
 const url = "https://picsum.photos/200/100";
 
 const BootstrapTest = () => {
   return (
     <Container className="App">
-      <Navbar bg="light" expand="lg">
+      <Navbar bg="light" expand="sm">
         <Navbar.Brand href="#home">React-Bootstrap測試中</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -105,9 +103,9 @@ const BootstrapTest = () => {
       </Form>
       <hr />
       <Row>
-        <Col lg={6}>lg=6</Col>
-        <Col lg={3}>lg=3</Col>
-        <Col lg={3}>lg=3</Col>
+        <Col sm={6}>sm=6</Col>
+        <Col sm={3}>sm=3</Col>
+        <Col sm={3}>sm=3</Col>
       </Row>
       <hr />
       <Button variant='testGreen'>TEST</Button>
