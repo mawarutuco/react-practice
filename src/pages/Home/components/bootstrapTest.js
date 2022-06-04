@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { FcGoogle, FcLike } from "react-icons/fc";
 import {
   Alert,
   Container,
@@ -59,11 +60,10 @@ const BootstrapTest = () => {
 
       <ButtonToolbar>
         <Button variant="btn btn-default btn-circle">
-          hyo
-          <i className="fa fa-check"></i>
+          <FcGoogle />
         </Button>
         <Button variant="btn btn-primary btn-circle">
-          <i className="fa fa-list"></i>
+          <FcLike />
         </Button>
         <Button variant="btn btn-success btn-circle">
           <i className="fa fa-link"></i>
@@ -107,8 +107,6 @@ const BootstrapTest = () => {
         <Col sm={3}>sm=3</Col>
         <Col sm={3}>sm=3</Col>
       </Row>
-      <hr />
-      <Button variant='testGreen'>TEST</Button>
     </Container>
   );
 };
