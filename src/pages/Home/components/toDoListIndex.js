@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 // import { API_GET_DATA } from "../../global/constants.js";
 
-import Edit from "./components/Edit.js";
-import List from "./components/List.js";
+import Edit from "./Edit.js";
+import List from "./List.js";
 
 
 // async function fetchData(setData) {

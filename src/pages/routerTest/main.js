@@ -1,16 +1,22 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Link, Routes } from "react-router-dom";
-import {
-  Title,
-  ReactAwesomeShapes,
-  ToDoListComponent,
-  BootstrapTestComponent,
-  Hyo,
-  TestTranslationComponent,
-} from "./com";
+import ToDoList from "../Home/components/toDoListIndex";
+import BootstrapTest from "../Home/bootstrapTest";
+import "../Home/i18nTest/i18n.js";
+import TestTranslation from "../Home/i18nTest/testTranslation.js";
+import BoBoGame from "../Home/BoBoGame/BoBoGame.js";
 
-class Main extends React.Component {
-  render() {
+const Title = (props) => {
+  return <h1>{props.title}</h1>;
+};
+
+const Home = () => {
+  return <h1>Home</h1>;
+};
+
+const Main =()=> {
+
+
     return (
       <BrowserRouter>
         <div>
@@ -21,30 +27,27 @@ class Main extends React.Component {
               <Link to="/toDoList">toDoList</Link>
             </li>
             <li>
-              <Link to="/ReactAwesomeShapes">react-awesome-shapes</Link>
-            </li>
-            <li>
               <Link to="/BootstrapTest">Bootstrap</Link>
             </li>
             <li>
               <Link to="/i18n">多國語系</Link>
             </li>
+            <li>
+              <Link to="/BoBoGame">踩地雷</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
-            <Route path="/" element={<Hyo />} />
-            <Route path="/toDoList" element={<ToDoListComponent />} />
-            <Route
-              path="/ReactAwesomeShapes"
-              element={<ReactAwesomeShapes />}
-            />
-            <Route path="/BootstrapTest" element={<BootstrapTestComponent />} />
-            <Route path="/i18n" element={<TestTranslationComponent />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/BoBoGame" element={<BoBoGame />} />
+            <Route path="/toDoList" element={<ToDoList />} />
+            <Route path="/BootstrapTest" element={<BootstrapTest />} />
+            <Route path="/i18n" element={<TestTranslation />} />
           </Routes>
         </div>
       </BrowserRouter>
-    );
+    )
   }
-}
+
 
 export default Main;
