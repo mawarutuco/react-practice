@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./all.css";
 
-const BoBoGame = () => {
+const Minesweeper = () => {
   const [newState, setNewStage] = useState();
 
   const ids = [];
@@ -64,4 +64,4 @@ const BoBoGame = () => {
   );
 };
 
-export default BoBoGame;
+export default Minesweeper;
