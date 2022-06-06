@@ -4,7 +4,8 @@ import ToDoList from "../Home/components/toDoListIndex";
 import BootstrapTest from "../Home/bootstrapTest";
 import "../Home/i18nTest/i18n.js";
 import TestTranslation from "../Home/i18nTest/testTranslation.js";
-import BoBoGame from "../Home/BoBoGame/BoBoGame.js";
+import Minesweeper from "../Home/Minesweeper/Minesweeper.js";
+import Shopping from "../Home/shopping/shopping.js";
 
 const Title = (props) => {
   return <h1>{props.title}</h1>;
@@ -33,13 +34,17 @@ const Main =()=> {
               <Link to="/i18n">多國語系</Link>
             </li>
             <li>
-              <Link to="/BoBoGame">踩地雷</Link>
+              <Link to="/Minesweeper">踩地雷</Link>
+            </li>
+            <li>
+              <Link to="/Shopping">購物車</Link>
             </li>
           </ul>
           <hr />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/BoBoGame" element={<BoBoGame />} />
+            <Route path="/Minesweeper" element={<Minesweeper />} />
+            <Route path="/Shopping" element={<Shopping />} />
             <Route path="/toDoList" element={<ToDoList />} />
             <Route path="/BootstrapTest" element={<BootstrapTest />} />
             <Route path="/i18n" element={<TestTranslation />} />

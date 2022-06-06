@@ -1,0 +1,13 @@
+.Products {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.Product {
+    border: 1px solid;
+}
+
+.sale {
+    color: white;
+    background-color: red;
+}
