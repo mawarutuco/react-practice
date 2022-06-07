@@ -12,6 +12,7 @@
     background-color: red;
 }
 
-img:hover{
-    cursor: pointer
+.bought{
+    color: white;
+    background-color: black;
 }
