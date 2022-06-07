@@ -11,3 +11,7 @@
     color: white;
     background-color: red;
 }
+
+img:hover{
+    cursor: pointer
+}

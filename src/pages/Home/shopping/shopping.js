@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react-dom";
+import { useState, useEffect } from "react-dom";
 import "./all.css";
 import { Modal, Alert } from "react-bootstrap";
 import swal from "sweetalert";
@@ -27,7 +27,7 @@ const Shopping = () => {
     {
       id: 2,
       imgURL: "https://fakeimg.pl/50/",
-      name: "hyyyo",
+      name: "hyyyoaaa",
       price: 500,
       isSale: false,
     },
@@ -63,15 +63,13 @@ const Shopping = () => {
     });
   };
 
-  
-
   //單項商品
   const Product = ({ item }) => {
     const { id, imgURL, name, price, isSale } = item;
 
     return (
       <div className="Product">
-        <img src={imgURL} />
+        <img onClick={() => buySomething(price)} src={imgURL} />
         <span className="sale">{isSale ? "特價中!" : " "}</span>
         <p>品名:{name}</p>
         <p>價錢:{price}</p>
@@ -81,31 +79,77 @@ const Shopping = () => {
     );
   };
 
-  const tmp =[]
+  //放進購物車
   const [shoppingCarArr, setCar] = React.useState([]);
   const addToCar = (item) => {
-    tmp.push(item);
-    setCar(tmp);
-    console.log(shoppingCarArr, shoppingCarArr.length);
+    const { id, name, price } = item;
+    const pushItem = (prev) => {
+      const quantity = 1;
+      return [{ id, name, price, quantity }, ...prev];
+    };
+    setCar(pushItem);
+    // console.log(shoppingCarArr);
+  };
+
+  const CarItem = (item) => {
+    const { id, name, price, quantity } = item;
+    return (
+      <>
+        <table>
+          <tr>
+            <td>品名{name}</td>
+            <td>價格{price}</td>
+            <td>數量{quantity}</td>
+            <td>
+              <button
+                onClick={() => {
+                  console.log(item);
+                }}
+              >
+                刪除
+              </button>
+            </td>
+          </tr>
+        </table>
+      </>
+    );
   };
 
   const ShoppingCar = () => {
-    // const tmp = true;
-    const tmp = shoppingCarArr.length;
+    const inCarItemQuantity = shoppingCarArr.length;
 
     const [show, setShow] = React.useState(false);
     const toggleModal = () => setShow(!show);
 
     return (
       <>
-        <button onClick={() => toggleModal()}>購物車({tmp})</button>
+        <button onClick={() => toggleModal()}>
+          購物車({inCarItemQuantity})
+        </button>
         <Modal show={show} onHide={toggleModal}>
-          <Modal.Header>購物車</Modal.Header>
-          <Modal.Body>{tmp ? "結帳吧~~" : "目前沒有商品"}
-          {}
+          <Modal.Header>
+            <h3>購物車</h3>
+          </Modal.Header>
+          <Modal.Body>
+            {inCarItemQuantity ? "" : "目前沒有商品"}
+            <ol>
+              {shoppingCarArr.map((item) => {
+                const { id, name, price, quantity } = item;
+                return (
+                  <li key={id}>
+                    <CarItem
+                      id={id}
+                      name={name}
+                      price={price}
+                      quantity={quantity}
+                    />
+                  </li>
+                );
+              })}
+            </ol>
           </Modal.Body>
           <Modal.Footer>
-            <button disabled={tmp ? false : true}>結帳</button>
+            <button disabled={inCarItemQuantity ? false : true}>結帳</button>
             <button onClick={toggleModal}>取消</button>
           </Modal.Footer>
         </Modal>
@@ -120,6 +164,7 @@ const Shopping = () => {
       <Products />
       <br />
       <ShoppingCar />
+      <button onClick={console.log(shoppingCarArr)}>查看目前</button>
     </>
   );
 };
