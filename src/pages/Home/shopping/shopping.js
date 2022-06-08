@@ -1,47 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./all.css";
-import { Modal, Row, Col, Alert } from "react-bootstrap";
+import { Modal, Row, Col, Alert, Stack } from "react-bootstrap";
 import swal from "sweetalert";
 
 const Shopping = () => {
   //個人餘額
-  const [myCash, setMyCash] = useState(200);
+  const [myCash, setMyCash] = useState(400);
 
-  //商品資料
-  // let productData = [
-  //   {
-  //     id: 0,
-  //     imgURL: "https://fakeimg.pl/50/?text=Hello",
-  //     name: "hyo",
-  //     price: 50,
-  //     isSale: false,
-  //   },
-  //   {
-  //     id: 1,
-  //     imgURL: "https://fakeimg.pl/50/",
-  //     name: "hyo_hyo",
-  //     price: 200,
-  //     isSale: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     imgURL: "https://fakeimg.pl/50/",
-  //     name: "hyyyoaaa",
-  //     price: 500,
-  //     isSale: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     imgURL: "https://fakeimg.pl/50/",
-  //     name: "yoooo",
-  //     price: 100,
-  //     isSale: false,
-  //   },
-  // ];
-  const [productData, setProductData] = useState([
+  //假商品資料
+  const productData = [
     {
       id: 0,
-      imgURL: "https://fakeimg.pl/50/?text=Hello",
+      imgURL: "https://fakeimg.pl/50/?text=PinkTail",
       name: "粉色長條尾巴",
       price: 50,
       isSale: false,
@@ -64,49 +34,54 @@ const Shopping = () => {
       id: 3,
       imgURL: "https://fakeimg.pl/50/",
       name: "獨角獸角",
-      price: 100,
+      price: 150,
       isSale: false,
     },
-  ]);
+    {
+      id: 4,
+      imgURL: "https://fakeimg.pl/50/",
+      name: "阿尼亞笑你表情包",
+      price: 1000,
+      isSale: false,
+    },
+  ];
 
-  //檢查錢夠不夠
-  const cashNotEnough = (price) => {
-    if (myCash < price) {
+  //檢查錢夠不夠，不夠=>return true
+  const cashNotEnough = (productPrice) => {
+    if (myCash < productPrice) {
       swal(`尷尬...錢不夠`, { icon: "error" });
       return true;
     }
   };
 
-  //購買後扣錢
-  const updateCash = (price) => {
-    setMyCash(myCash - price);
+  //購買後扣個人餘額，彈出alert說購買成功
+  const alertSussesAndUpdateCash = (productPrice) => {
+    let tmp = myCash - productPrice;
+    setMyCash(tmp);
+    swal(`購買成功，剩餘餘額${tmp}`, { icon: "success" });
   };
 
-  //買的東西塞到已買
-  const putToBoughtProduct = (id) => {
-    const pushItem = (prev) => [{ id }, ...prev];
-    setBoughtProduct(pushItem);
-  };
-
+  //已擁有的商品Array
   const [boughtProductArr, setBoughtProduct] = useState([]);
-  //買東西
-  const buyProduct = (item) => {
-    const { id, name, price } = item;
-    if (cashNotEnough(price)) return;
-    swal({
-      text: "確定購買?",
-      buttons: true,
-      dangerMode: true,
-    }).then((willDelete) => {
-      if (willDelete) {
-        updateCash(price);
-        putToBoughtProduct(id);
-        swal("購買成功", { icon: "success" });
-      }
-    });
+
+  //成功買到的商品塞到已擁有的商品Array
+  const putToBoughtProduct = (obj) => {
+    if (obj.length == undefined) {
+      //直接購買時，傳來的不是陣列，直接作setState動作
+      const { id } = obj;
+      const pushItem = (prev) => [{ id }, ...prev];
+      setBoughtProduct(pushItem);
+    } else {
+      //商城結帳，傳來的是陣列，故需map跑
+      obj.map((item) => {
+        const { id } = item;
+        const pushItem = (prev) => [{ id }, ...prev];
+        setBoughtProduct(pushItem);
+      });
+    }
   };
 
-  //放進購物車
+  //商品放進購物車
   const [shoppingCarArr, setShoppingCar] = useState([]);
   const addToCar = (item) => {
     const { id, name, price } = item;
@@ -117,29 +92,50 @@ const Shopping = () => {
     setShoppingCar(pushItem);
   };
 
-  //單項商品
+  //展示單項商品
   const Product = ({ item }) => {
     const { id, imgURL, name, price, isSale } = item;
 
-    //判斷商品是在購物車 or 已經買了
-    const itemInCar = shoppingCarArr.find((item) => item.id === id);
-    const boughtItem = boughtProductArr.find((item) => item.id === id);
-    const btnDisabled = itemInCar || boughtItem;
+    //判斷商品狀態是在購物車or已經買了
+    const alreadyInCar = shoppingCarArr.some((item) => item.id === id);
+    const alreadyBought = boughtProductArr.some((item) => item.id === id);
+
+console.log(alreadyInCar);
+
+    //已放購物車or已買，btn都不能再按
+    const btnDisabled = alreadyInCar || alreadyBought;
+
+    //買東西
+    const buyProduct = (item) => {
+      const { price } = item;
+      if (cashNotEnough(price)) return;
+      swal({
+        text: "確定購買?",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          alertSussesAndUpdateCash(price);
+          putToBoughtProduct(item);
+        }
+      });
+    };
 
     return (
       <div className="Product">
         <button
           onClick={() => {
+            //要跟pixiJS對接
             console.log("TDM換裝");
           }}
           disabled={btnDisabled}
         >
           <img src={imgURL} />
         </button>
-        <span className="sale">{isSale ? "特價中!" : ""}</span>
+        <span className="sale">{isSale ? "特價中" : ""}</span>
         <span className="bought">
-          {itemInCar ? "已放購物車" : ""}
-          {boughtItem ? "已購買" : ""}
+          {alreadyInCar ? "已放購物車" : ""}
+          {alreadyBought ? "已購買" : ""}
         </span>
         <p>品名:{name}</p>
         <p>價錢:{price}</p>
@@ -153,7 +149,7 @@ const Shopping = () => {
     );
   };
 
-  //所有商品
+  //展示所有商品
   const Products = () => {
     return (
       <>
@@ -166,21 +162,9 @@ const Shopping = () => {
     );
   };
 
-  //結帳
-  const clearCar = (arr, price) => {
-    if (cashNotEnough(price)) return;
-    updateCash(price);
-    setShoppingCar([]);
-    arr.map((item) => {
-      const { id } = item;
-      putToBoughtProduct(id);
-    });
-    swal("購買成功", { icon: "success" });
-  };
-
   //購物車內單品
   const ProductInCar = (item) => {
-    const { id, name, price, quantity } = item;
+    const { id, name, price } = item;
 
     const deleteItem = (id) => {
       const newShoppingCarArr = shoppingCarArr.filter((item) => item.id != id);
@@ -191,7 +175,6 @@ const Shopping = () => {
       <Row key={id}>
         <Col>{name}</Col>
         <Col>{price}</Col>
-        <Col>{quantity}</Col>
         <Col>
           <button
             onClick={() => {
@@ -205,17 +188,28 @@ const Shopping = () => {
     );
   };
 
+  //Modal要不要顯示
+  const [show, setShow] = useState(false);
+
   //購物車按鈕&Modal
   const ShoppingCar = () => {
     const inCarItemQuantity = shoppingCarArr.length;
 
-    const [show, setShow] = useState(false);
     const toggleModal = () => setShow(!show);
 
     const total = shoppingCarArr.reduce(
       (accumulator, item) => accumulator + item.price,
       0
     );
+
+    //結帳
+    const clearCar = (arr, productPrice) => {
+      if (cashNotEnough(productPrice)) return;
+      alertSussesAndUpdateCash(productPrice);
+      putToBoughtProduct(arr);
+      setShow(false);
+      setShoppingCar([]);
+    };
 
     return (
       <>
@@ -227,21 +221,17 @@ const Shopping = () => {
             <h3>購物車</h3>
           </Modal.Header>
           <Modal.Body>
-            {inCarItemQuantity ? "" : "目前沒有商品"}
             {shoppingCarArr.map((item) => {
-              const { id, name, price, quantity } = item;
+              const { id, name, price } = item;
               return (
-                <ProductInCar
-                  key={id}
-                  id={id}
-                  name={name}
-                  price={price}
-                  quantity={quantity}
-                />
+                <ProductInCar key={id} id={id} name={name} price={price} />
               );
             })}
-            <br />
-            {inCarItemQuantity ? <Alert>總金額：{total}</Alert> : ""}
+            {inCarItemQuantity ? (
+              <Alert>總金額：{total}</Alert>
+            ) : (
+              "目前沒有商品"
+            )}
           </Modal.Body>
           <Modal.Footer>
             <button
