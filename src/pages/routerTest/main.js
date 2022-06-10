@@ -1,11 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import { BrowserRouter, Route, Link, Routes } from "react-router-dom";
 import ToDoList from "../Home/components/toDoListIndex";
 import BootstrapTest from "../Home/bootstrapTest";
 import "../Home/i18nTest/i18n.js";
 import TestTranslation from "../Home/i18nTest/testTranslation.js";
 import Minesweeper from "../Home/Minesweeper/Minesweeper.js";
-import Shopping from "../Home/shopping/shopping.js";
+import Shopping from "../Home/shopping/ShoppingIndex.js";
+import Task from "../Home/Task/TaskIndex.js";
 
 const Title = (props) => {
   return <h1>{props.title}</h1>;
@@ -39,6 +40,9 @@ const Main =()=> {
             <li>
               <Link to="/Shopping">購物車</Link>
             </li>
+            <li>
+              <Link to="/Task">任務</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
@@ -48,6 +52,7 @@ const Main =()=> {
             <Route path="/toDoList" element={<ToDoList />} />
             <Route path="/BootstrapTest" element={<BootstrapTest />} />
             <Route path="/i18n" element={<TestTranslation />} />
+            <Route path="/Task" element={<Task />} />
           </Routes>
         </div>
       </BrowserRouter>
