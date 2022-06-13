@@ -36,7 +36,6 @@
     <div id="app"></div>
 
     <script type="text/babel">
-
       function ToDoList() {
         //資料
         let data = {
@@ -57,13 +56,7 @@
         };
 
         const Edit = () => {
-          
-        const [inputItem, setInputItem] = React.useState("");
-
-          //input成雙向資料流
-          const inputItemChange = (e) => {
-            setInputItem(e.target.value);
-          };
+          const [inputItem, setInputItem] = React.useState("");
 
           //新增待辦事項
           const addItem = () => {
@@ -96,7 +89,7 @@
               <input
                 type="text"
                 placeHolder="待辦事項"
-                onChange={inputItemChange}
+                onChange={(e) => setInputItem(e.target.value)}
                 value={inputItem}
                 onKeyUp={enterToAddItem}
                 ref={inputRef}
@@ -108,12 +101,8 @@
 
         const List = () => {
           //刪除已完成todo
-          const deleteAllDoneItem = () => {
-            const nowStateList = list.filter(
-              (toDoItem) => toDoItem.done === false
-            );
-            setList(nowStateList);
-          };
+          const deleteAllDoneItem = () =>
+            setList((pre) => pre.filter((item) => item.done === false));
 
           return (
             <div>
@@ -137,11 +126,12 @@
         const Item = ({ el }) => {
           //打勾完成事項
           const completeHandler = (id) => {
-            const nowStateList = list.map((toDoItem) => {
-              if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
-              return toDoItem;
-            });
-            setList(nowStateList);
+            setList((pre) =>
+              pre.map((toDoItem) => {
+                if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+                return toDoItem;
+              })
+            );
 
             //   let doneList = [];
             //   let unDoneList = [];
@@ -155,18 +145,17 @@
           };
 
           const modifyToDoItem = (id) => {
-            const nowStateList = list.map((toDoItem) => {
-              if (toDoItem.id === id) toDoItem.item = prompt("編輯");
-              return toDoItem;
-            });
-            setList(nowStateList);
+            setList((pre) =>
+              pre.map((toDoItem) => {
+                if (toDoItem.id === id) toDoItem.item = prompt("編輯");
+                return toDoItem;
+              })
+            );
           };
 
           //刪除todo
-          const deleteToDoItem = (id) => {
-            const nowStateList = list.filter((toDoItem) => toDoItem.id !== id);
-            setList(nowStateList);
-          };
+          const deleteToDoItem = (id) =>
+            setList((pre) => pre.filter((toDoItem) => toDoItem.id !== id));
 
           const { id, done, item } = el;
 
@@ -185,15 +174,6 @@
                 修改
               </button>
               <button onClick={() => deleteToDoItem(id)}>刪除</button>
-              <p></p>
-
-              {/*<input
-                value={item}
-                className={done ? "done" : ""}
-                disabled={done ? "done" : ""}
-                // onClick={() => editToDoItem(el)}
-                // onChange={() => toDoItemChange()}
-              />*/}
               <hr />
             </li>
           );
@@ -209,9 +189,7 @@
       }
 
       const app = ReactDOM.createRoot(document.getElementById("app"));
-      app.render(
-          <ToDoList />
-      );
+      app.render(<ToDoList />);
     </script>
   </body>
 </html>
