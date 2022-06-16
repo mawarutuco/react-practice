@@ -33,163 +33,170 @@
     }
   </style>
   <body>
-    <div id="app"></div>
+    <div id="root"></div>
 
     <script type="text/babel">
+      const { useContext, createContext,useState,useRef,useEffect } = React;
+      var heirloom = createContext();
+
       function ToDoList() {
         //資料
         let data = {
-          id: 2,
           list: [
             { id: 0, item: "龍貓", done: false },
             { id: 1, item: "千尋", done: true },
+            { id: 2, item: "千尋", done: true },
           ],
         };
 
         //設useState
-        const [onlyId, setId] = React.useState(data.list.length);
-        const [list, setList] = React.useState(data.list);
-
-        const Title = () => {
-          const [title, setTitle] = React.useState("ToDoList");
-          return <h1>{title}</h1>;
-        };
-
-        const Edit = () => {
-          const [inputItem, setInputItem] = React.useState("");
-
-          //新增待辦事項
-          const addItem = () => {
-            // if (String(inputItem).trim().length == 0) {
-            //   alert("未輸入待辦事項");
-            //   return;
-            // }
-
-            const pushItem = (prev) => [
-              { id: onlyId, item: inputItem, done: false },
-              ...prev,
-            ];
-
-            setId(onlyId + 1);
-            setInputItem("");
-            setList(pushItem);
-          };
-
-          const inputRef = React.useRef(null);
-          // React.useEffect(() => {
-          //   inputRef.current.focus();
-          // }, [setInputItem]);
-
-          const enterToAddItem = (ev) => {
-            if (ev.keyCode == 13) addItem();
-          };
-
-          return (
-            <div>
-              <input
-                type="text"
-                placeHolder="待辦事項"
-                onChange={(e) => setInputItem(e.target.value)}
-                value={inputItem}
-                onKeyUp={enterToAddItem}
-                ref={inputRef}
-              />
-              <button onClick={() => addItem()}>新增</button>
-            </div>
-          );
-        };
-
-        const List = () => {
-          //刪除已完成todo
-          const deleteAllDoneItem = () =>
-            setList((pre) => pre.filter((item) => item.done === false));
-
-          return (
-            <div>
-              <h3>to do</h3>
-              <ul>
-                {list.map((el) => {
-                  if (!el.done) return <Item el={el} />;
-                })}
-              </ul>
-              <h3>done</h3>
-              <button onClick={deleteAllDoneItem}>刪除已完成</button>
-              <ul>
-                {list.map((el) => {
-                  if (el.done) return <Item el={el} />;
-                })}
-              </ul>
-            </div>
-          );
-        };
-
-        const Item = ({ el }) => {
-          //打勾完成事項
-          const completeHandler = (id) => {
-            setList((pre) =>
-              pre.map((toDoItem) => {
-                if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
-                return toDoItem;
-              })
-            );
-
-            //   let doneList = [];
-            //   let unDoneList = [];
-            //   list.map((toDoItem) => {
-            //     if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
-
-            //     if (toDoItem.done) doneList.push(toDoItem);
-            //     else unDoneList.push(toDoItem);
-            //   });
-            //   setList([...unDoneList, ...doneList]);
-          };
-
-          const modifyToDoItem = (id) => {
-            setList((pre) =>
-              pre.map((toDoItem) => {
-                if (toDoItem.id === id) toDoItem.item = prompt("編輯");
-                return toDoItem;
-              })
-            );
-          };
-
-          //刪除todo
-          const deleteToDoItem = (id) =>
-            setList((pre) => pre.filter((toDoItem) => toDoItem.id !== id));
-
-          const { id, done, item } = el;
-
-          return (
-            <li key={id}>
-              <input
-                type="checkbox"
-                checked={done}
-                onChange={() => completeHandler(id)}
-              />
-              <span className={done ? "done" : ""}>{item}</span>
-              <button
-                style={{ display: done ? "none" : "" }}
-                onClick={() => modifyToDoItem(id)}
-              >
-                修改
-              </button>
-              <button onClick={() => deleteToDoItem(id)}>刪除</button>
-              <hr />
-            </li>
-          );
-        };
+        const [onlyId, setId] = useState(data.list.length);
+        const [list, setList] = useState(data.list);
 
         return (
           <div>
-            <Title />
-            <Edit />
-            <List />
+            <h1>ToDoList</h1>
+            <Edit setList={setList} setId={setId} onlyId={onlyId} />
+            <heirloom.Provider value={setList}>
+              <List list={list} />
+            </heirloom.Provider>
           </div>
         );
       }
 
-      const app = ReactDOM.createRoot(document.getElementById("app"));
-      app.render(<ToDoList />);
+      const Edit = ({ setList, setId,onlyId }) => {
+        const [inputItem, setInputItem] = useState("");
+
+        const clearInput = () => {
+          setInputItem("");
+        };
+
+        //新增待辦事項
+        const addItem = () => {
+          // if (String(inputItem).trim().length == 0) {
+          //   alert("未輸入待辦事項");
+          //   return;
+          // }
+
+          const pushItem = (prev) => [
+            { id: onlyId, item: inputItem, done: false },
+            ...prev,
+          ];
+
+          setId((prev) => prev + 1);
+          setList(pushItem);
+          clearInput()
+        };
+
+        const inputRef = useRef(null);
+        // useEffect(() => {
+        //   inputRef.current.focus();
+        // }, [setInputItem]);
+
+        const enterToAddItem = (ev) => {
+          if (ev.keyCode == 13) addItem();
+        };
+
+        //刪除已完成todo
+        const deleteAllDoneItem = () =>
+          setList((pre) => pre.filter((item) => item.done === false));
+
+        return (
+          <div>
+            <input
+              type="text"
+              placeHolder="待辦事項"
+              onChange={(e) => setInputItem(e.target.value)}
+              value={inputItem}
+              onKeyUp={enterToAddItem}
+              ref={inputRef}
+            />
+            <button onClick={() => addItem()}>新增</button>
+            <button onClick={deleteAllDoneItem}>刪除已完成</button>
+          </div>
+        );
+      };
+
+      const List = ({ list }) => {
+        return (
+          <div>
+            <h3>to do</h3>
+            <ul>
+              {list.map((el) => {
+                if (!el.done) return <Item el={el} />;
+              })}
+            </ul>
+            <h3>done</h3>
+
+            <ul>
+              {list.map((el) => {
+                if (el.done) return <Item el={el} />;
+              })}
+            </ul>
+          </div>
+        );
+      };
+
+      const Item = ({ el }) => {
+        const setList = useContext(heirloom);
+
+        //打勾完成事項
+        const completeHandler = (id) => {
+          setList((pre) =>
+            pre.map((toDoItem) => {
+              if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+              return toDoItem;
+            })
+          );
+
+          //   let doneList = [];
+          //   let unDoneList = [];
+          //   list.map((toDoItem) => {
+          //     if (toDoItem.id === id) toDoItem.done = !toDoItem.done;
+
+          //     if (toDoItem.done) doneList.push(toDoItem);
+          //     else unDoneList.push(toDoItem);
+          //   });
+          //   setList([...unDoneList, ...doneList]);
+        };
+
+        const modifyToDoItem = (id) => {
+          setList((pre) =>
+            pre.map((toDoItem) => {
+              if (toDoItem.id === id) toDoItem.item = prompt("編輯");
+              return toDoItem;
+            })
+          );
+        };
+
+        //刪除todo
+        const deleteToDoItem = (id) =>
+          setList((pre) => pre.filter((toDoItem) => toDoItem.id !== id));
+
+        const { id, done, item } = el;
+
+        return (
+          <li key={id}>
+            <input
+              type="checkbox"
+              checked={done}
+              onChange={() => completeHandler(id)}
+            />
+            <span className={done ? "done" : ""}>{item}</span>
+            <button
+              style={{ display: done ? "none" : "" }}
+              onClick={() => modifyToDoItem(id)}
+            >
+              修改
+            </button>
+            <button onClick={() => deleteToDoItem(id)}>刪除</button>
+            <hr />
+          </li>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<ToDoList />);
     </script>
   </body>
 </html>
