@@ -7,6 +7,7 @@ import TestTranslation from "../Home/i18nTest/testTranslation.js";
 import Minesweeper from "../Home/Minesweeper/Minesweeper.js";
 import Shopping from "../Home/shopping/ShoppingIndex.js";
 import Task from "../Home/Task/TaskIndex.js";
+import MyPage from "../Home/MyPage/MyPage.js"
 
 const Title = (props) => {
   return <h1>{props.title}</h1>;
@@ -43,6 +44,9 @@ const Main =()=> {
             <li>
               <Link to="/Task">任務</Link>
             </li>
+            <li>
+              <Link to="/MyPage">MyPage</Link>
+            </li>
           </ul>
           <hr />
           <Routes>
@@ -53,6 +57,7 @@ const Main =()=> {
             <Route path="/BootstrapTest" element={<BootstrapTest />} />
             <Route path="/i18n" element={<TestTranslation />} />
             <Route path="/Task" element={<Task />} />
+            <Route path="/MyPage" element={<MyPage />} />
           </Routes>
         </div>
       </BrowserRouter>
