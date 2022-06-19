@@ -11,6 +11,8 @@
     "i18next": "^21.8.5",
     "i18next-http-backend": "^1.4.1",
     "json-server": "^0.17.0",
+    "mobx": "^6.6.0",
+    "mobx-react": "^7.5.0",
     "npm": "^8.11.0",
     "pixi-spine": "^3.0.13",
     "pixi.js": "^6.3.2",
