@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, InputGroup, Row, Col } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { BsArrowReturnRight } from "react-icons/bs";
@@ -58,6 +58,10 @@ const ToDoItem = ({ obj, item }) => {
 
   const 縮 = (indent) => {
     const tmp = <BsArrowReturnRight />;
+
+    // const noShow = { display: 'none' };
+    // const tmp = <InputGroup.Checkbox style={noShow} />;
+
     let arr = [];
     for (let i = 0; i < indent; i++) {
       arr.push(tmp);
@@ -85,17 +89,20 @@ const ToDoItem = ({ obj, item }) => {
         }
       });
 
-      let start = -1;
-      let count = 0;
-      後.forEach((item, idx) => {
-        if (item.indent > 縮) {
-          前.push(item);
-          if (!count) start = idx;
-          count++;
+      if (後.length > 0) {
+        if (後[0].indent !== 縮) {
+          // let start = -1;
+          let count = 0;
+          後.map((item, idx) => {
+            if (item.indent > 縮) {
+              前.push(item);
+              // if (!count) start = idx;
+              count++;
+            }
+          });
+          後.splice(0, count);
         }
-        if (item.ident <= 縮) return;
-      });
-      後.splice(start, count);
+      }
 
       setToDo([
         ...前,
@@ -143,6 +150,11 @@ const ToDoItem = ({ obj, item }) => {
     // if (e.keyCode === 16) console.log("shift");
   };
 
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   return (
     <>
       <InputGroup>
@@ -152,6 +164,7 @@ const ToDoItem = ({ obj, item }) => {
           onChange={() => changeCheck(id)}
         />
         <Form.Control
+          ref={inputRef}
           disabled={isChecked}
           value={value}
           onChange={(e) => changeValue(e, id)}

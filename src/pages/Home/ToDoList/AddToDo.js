@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { GrAdd } from "react-icons/gr";
 
 const AddToDo = ({ obj }) => {
-  const { dataList, toDo, setToDo,setId,newId } = obj;
+  const { toDo, setToDo,setId,newId } = obj;
 
 
   const add = () => {

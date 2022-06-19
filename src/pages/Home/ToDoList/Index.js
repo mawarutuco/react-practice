@@ -22,7 +22,7 @@ const Index = () => {
   const pages = ["ShowAll", "ShowActive", "ShowCompleted"];
   const [page, setPage] = useState("ShowAll");
 
-  const obj = { dataList, toDo, setToDo, setId, newId };
+  const obj = { toDo, setToDo, setId, newId };
 
   return (
     <Container>
