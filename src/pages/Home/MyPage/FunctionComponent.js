@@ -1,6 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Link, Routes } from "react-router-dom";
-import  "./css.css";
+// import  "./css.css";
 
 const style={color:'blue'}
 
