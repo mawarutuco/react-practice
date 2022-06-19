@@ -6,34 +6,47 @@ import AddToDo from "./AddToDo";
 import "./todo.css";
 
 const Index = () => {
+  const boxShadow = { boxShadow: "53px 41px 80px rgba(0, 0, 0, 0.66)" };
+  // x y 模糊程度 rgba(0, 0, 0, 深度)
   const dataList = [
-    { id: 0, value: "ok", indent: 0, isChecked: false },
-    { id: 1, value: "a", indent: 1, isChecked: false },
-    { id: 2, value: "b", indent: 2, isChecked: false },
-    { id: 3, value: "c", indent: 0, isChecked: false },
+    { id: 0, value: "focus新增出來的input", indent: 0, isChecked: false },
+    { id: 1, value: "可以上下移動focus", indent: 1, isChecked: false },
+    { id: 2, value: "可以上下移動input", indent: 2, isChecked: false },
+    { id: 3, value: "改善checkBox", indent: 2, isChecked: false },
+    { id: 4, value: "改善checkBox", indent: 3, isChecked: false },
   ];
 
   const [toDo, setToDo] = useState(dataList);
   const [newId, setId] = useState(dataList.length);
 
-  const obj = { dataList, toDo, setToDo,setId,newId };
+  const pages = ["ShowAll", "ShowActive", "ShowCompleted"];
+  const [page, setPage] = useState("ShowAll");
+
+  const obj = { dataList, toDo, setToDo, setId, newId };
 
   return (
     <Container>
-      <Card>
+      <Card style={boxShadow}>
         <Card.Title>
           <h1>ToDoList</h1>
         </Card.Title>
         <Card.Body>
-          {toDo.map((item) => (
-            <ToDo key={item.id} obj={obj} item={item} />
-          ))}
+          {toDo.map((item) => {
+            if (page === "ShowAll")
+              return <ToDo key={item.id} obj={obj} item={item} />;
+            if (page === "ShowActive" && item.isChecked)
+              return <ToDo key={item.id} obj={obj} item={item} />;
+            if (page === "ShowCompleted" && !item.isChecked)
+              return <ToDo key={item.id} obj={obj} item={item} />;
+          })}
           <AddToDo obj={obj} />
         </Card.Body>
         <Card.Footer>
-          <Button>Show All</Button>
-          <Button>Show Active</Button>
-          <Button>Show Completed</Button>
+          {pages.map((page) => (
+            <Button key={page} onClick={() => setPage(page)}>
+              {page}
+            </Button>
+          ))}
         </Card.Footer>
       </Card>
     </Container>

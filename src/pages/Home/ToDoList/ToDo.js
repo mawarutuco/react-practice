@@ -9,8 +9,22 @@ const ToDoItem = ({ obj, item }) => {
   const { id, value, isChecked, indent } = item;
 
   const changeCheck = (id) => {
-    const tmp = toDo.map((item) => {
-      if (item.id === id) item.isChecked = !item.isChecked;
+    let checked;
+    let 縮 = 99;
+    let keep = true;
+    let tmp = toDo.map((item) => {
+      if (keep) {
+        if (item.id === id) {
+          縮 = item.indent;
+          item.isChecked = !item.isChecked;
+          checked = item.isChecked;
+        } else if (item.indent === 縮) keep = false;
+
+        if (item.indent > 縮) {
+          item.isChecked = checked;
+        }
+      }
+
       return item;
     });
     setToDo(tmp);
@@ -25,18 +39,36 @@ const ToDoItem = ({ obj, item }) => {
   };
 
   const deleteToDoItem = (id) => {
-    setToDo((pre) => pre.filter((item) => item.id !== id));
+    let 縮 = 99;
+    let start = -1;
+    let count = 1;
+    let tmp = [...toDo];
+    toDo.forEach((item, idx) => {
+      if (item.indent > 縮) count++;
+      if (item.id === id) {
+        start = idx;
+        縮 = item.indent;
+      }
+      if (item.indent <= 縮) return;
+    });
+    tmp.splice(start, count);
+    console.log(toDo, tmp);
+    setToDo(tmp);
   };
 
   const 縮 = (indent) => {
-    if (indent === 1) return <BsArrowReturnRight />;
-    if (indent === 2)
-      return (
-        <>
-          <BsArrowReturnRight />
-          <BsArrowReturnRight />
-        </>
-      );
+    const tmp = <BsArrowReturnRight />;
+    let arr = [];
+    for (let i = 0; i < indent; i++) {
+      arr.push(tmp);
+    }
+    return (
+      <>
+        {arr.map((item, idx) => (
+          <span key={idx}>{item}</span>
+        ))}
+      </>
+    );
   };
 
   const active = (e, id) => {
@@ -44,7 +76,7 @@ const ToDoItem = ({ obj, item }) => {
       let 前 = [];
       let 後 = [];
       let 碰到了 = false;
-      let 縮 = 0;
+      let 縮 = 99;
       toDo.forEach((item) => {
         碰到了 ? 後.push(item) : 前.push(item);
         if (item.id === id) {
@@ -52,6 +84,19 @@ const ToDoItem = ({ obj, item }) => {
           縮 = item.indent;
         }
       });
+
+      let start = -1;
+      let count = 0;
+      後.forEach((item, idx) => {
+        if (item.indent > 縮) {
+          前.push(item);
+          if (!count) start = idx;
+          count++;
+        }
+        if (item.ident <= 縮) return;
+      });
+      後.splice(start, count);
+
       setToDo([
         ...前,
         { id: newId, value: "", indent: 縮, isChecked: false },
@@ -60,13 +105,42 @@ const ToDoItem = ({ obj, item }) => {
       setId((pre) => pre + 1);
       return;
     }
-    if (e.keyCode === 9) console.log("tab");
-    // if (e.keyCode === 16) {
-      // toDo.map(item => {if(item.id === id){item.indent++;
-      //   return item}})
-    //   setToDo([])
-    // }}
-    if (e.keyCode === 16) console.log("shift");
+
+    //↑38 //↓40
+    if (e.keyCode === 40) {
+    }
+
+    //←
+    if (e.keyCode === 37) {
+      let 縮 = 99;
+      let tmp = toDo.map((item) => {
+        if (item.indent > 縮) item.indent -= 1;
+        if (item.id === id) {
+          item.indent -= 1;
+          縮 = item.indent;
+        }
+        return item;
+      });
+      return setToDo(tmp);
+    }
+
+    //→
+    if (e.keyCode === 39) {
+      let 縮 = 99;
+      let tmp = toDo.map((item) => {
+        if (item.indent > 縮) item.indent += 1;
+        if (item.id === id) {
+          item.indent += 1;
+          縮 = item.indent;
+        }
+        if (item.indent === 縮) return item;
+        return item;
+      });
+      return setToDo(tmp);
+    }
+
+    // if (e.keyCode === 9) console.log("tab");
+    // if (e.keyCode === 16) console.log("shift");
   };
 
   return (
