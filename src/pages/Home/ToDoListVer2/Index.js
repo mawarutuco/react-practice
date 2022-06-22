@@ -3,7 +3,7 @@ import { Container, Card, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ToDo from "./ToDo";
 import AddToDo from "./AddToDo";
-import "./todo.css";
+import { showPage } from "./active";
 
 const Index = () => {
   const boxShadow = { boxShadow: "53px 41px 80px rgba(0, 0, 0, 0.66)" };
@@ -21,6 +21,25 @@ const Index = () => {
 
   const pages = ["ShowAll", "ShowActive", "ShowCompleted"];
   const [page, setPage] = useState("ShowAll");
+  const FooterBtn = () => {
+    const changeBtnColor = (item) =>
+      page === item ? "primary" : "outline-primary";
+
+    return (
+      <>
+        {pages.map((item) => (
+          <Button
+            variant={changeBtnColor(item)}
+            onClick={() => setPage(item)}
+            key={item}
+            className="m-1"
+          >
+            {item}
+          </Button>
+        ))}
+      </>
+    );
+  };
 
   const obj = { toDo, setToDo, setId, newId };
 
@@ -31,26 +50,13 @@ const Index = () => {
           <h1>ToDoList</h1>
         </Card.Title>
         <Card.Body>
-          {toDo.map((item) => {
-            if (page === "ShowAll")
-              return <ToDo key={item.id} obj={obj} item={item} />;
-            if (page === "ShowActive" && !item.isChecked)
-              return <ToDo key={item.id} obj={obj} item={item} />;
-            if (page === "ShowCompleted" && item.isChecked)
-              return <ToDo key={item.id} obj={obj} item={item} />;
+          {showPage(page, toDo).map((item) => {
+            return <ToDo key={item.id} obj={obj} item={item} />;
           })}
           <AddToDo obj={obj} />
         </Card.Body>
         <Card.Footer>
-          {pages.map((page) => (
-            <Button
-              variant="outline-primary"
-              key={page}
-              onClick={() => setPage(page)}
-            >
-              {page}
-            </Button>
-          ))}
+          <FooterBtn />
         </Card.Footer>
       </Card>
     </Container>

@@ -3,6 +3,12 @@ import { Form, Button, InputGroup, Row, Col } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { BsArrowReturnRight } from "react-icons/bs";
 
+//刪除新增詢問
+//取消小孩checkbox，爸爸也要取消
+//家族縮排
+
+const 最底層 = 2;
+
 const ToDoItem = ({ obj, item }) => {
   const { toDo, setToDo, setId, newId } = obj;
 
@@ -59,12 +65,12 @@ const ToDoItem = ({ obj, item }) => {
   };
 
   const 縮 = (x) => {
-    const indent = "    ";
-    let most = x > 2 ? 2 : x;
+    const indent = "     ";
+    let most = x > 最底層 ? 最底層 : x;
     return <pre>{indent.repeat(most)}</pre>;
   };
 
-  const active = (e, id) => {
+  const keyDownActive = (e, id) => {
     switch (e.keyCode) {
       //enter
       case 13: {
@@ -102,7 +108,7 @@ const ToDoItem = ({ obj, item }) => {
         break;
       }
 
-      //shift
+      //tab
       case 9: {
         //shift+tab
         if (e.shiftKey) {
@@ -118,7 +124,7 @@ const ToDoItem = ({ obj, item }) => {
           e.preventDefault();
           let tmp = toDo.map((item) => {
             if (item.id === id) item.x += 1;
-            if (item.x > 2) item.x = 2;
+            if (item.x > 最底層) item.x = 最底層;
             return item;
           });
           setToDo(tmp);
@@ -128,46 +134,64 @@ const ToDoItem = ({ obj, item }) => {
 
       //↑
       case 38: {
-        if (toDo[0].id === id) return;
-        let 前 = [];
-        let 主角 = "";
-        let 後 = [];
-        let 碰到了 = false;
-        toDo.forEach((item) => {
-          if (item.id === id) {
-            碰到了 = true;
-            主角 = item;
-          } else {
-            碰到了 ? 後.push(item) : 前.push(item);
-          }
-        });
+        if (e.ctrlKey || e.metaKey) {
+          if (toDo[0].id === id) return;
+          let 前 = [];
+          let 主角 = "";
+          let 後 = [];
+          let 碰到了 = false;
+          toDo.forEach((item) => {
+            if (item.id === id) {
+              碰到了 = true;
+              主角 = item;
+            } else {
+              碰到了 ? 後.push(item) : 前.push(item);
+            }
+          });
 
-        後.unshift(前.pop());
+          後.unshift(前.pop());
 
-        setToDo([...前, 主角, ...後]);
+          setToDo([...前, 主角, ...後]);
+        } else {
+          let idx = toDo.findIndex((n) => n.id === id);
+          if (idx === -1 || idx === 0) return;
+          let newIdx = idx - 1;
+          document.getElementsByClassName("form-control")[newIdx].focus();
+        }
         break;
       }
 
       //↓
       case 40: {
-        if (toDo[toDo.length - 1].id === id) return;
-        let 前 = [];
-        let 主角 = "";
-        let 後 = [];
-        let 碰到了 = false;
-        toDo.forEach((item) => {
-          if (item.id === id) {
-            碰到了 = true;
-            主角 = item;
-          } else {
-            碰到了 ? 後.push(item) : 前.push(item);
-          }
-        });
+        if (e.ctrlKey || e.metaKey) {
+          if (toDo[toDo.length - 1].id === id) return;
+          let 前 = [];
+          let 主角 = "";
+          let 後 = [];
+          let 碰到了 = false;
+          toDo.forEach((item) => {
+            if (item.id === id) {
+              碰到了 = true;
+              主角 = item;
+            } else {
+              碰到了 ? 後.push(item) : 前.push(item);
+            }
+          });
 
-        前.push(後.shift());
+          前.push(後.shift());
 
-        setToDo([...前, 主角, ...後]);
+          setToDo([...前, 主角, ...後]);
+        } else {
+          let idx = toDo.findIndex((n) => n.id === id);
+          if (idx === -1 || idx === toDo.length - 1) return;
+          let newIdx = idx + 1;
+          document.getElementsByClassName("form-control")[newIdx].focus();
+        }
         break;
+      }
+
+      //backspace
+      case 8: {
       }
     }
   };
@@ -178,25 +202,23 @@ const ToDoItem = ({ obj, item }) => {
   }, []);
 
   return (
-    <>
-      <InputGroup>
-        {縮(x)}
-        <InputGroup.Checkbox
-          checked={isChecked}
-          onChange={() => changeCheck(id)}
-        />
-        <Form.Control
-          ref={inputRef}
-          disabled={isChecked}
-          value={value}
-          onChange={(e) => changeValue(e, id)}
-          onKeyDown={(e) => active(e, id)}
-        />
-        <Button onClick={() => deleteToDoItem(id)} variant="outline-secondary">
-          <FaTrash />
-        </Button>
-      </InputGroup>
-    </>
+    <InputGroup>
+      {縮(x)}
+      <InputGroup.Checkbox
+        checked={isChecked}
+        onChange={() => changeCheck(id)}
+      />
+      <Form.Control
+        ref={inputRef}
+        disabled={isChecked}
+        value={value}
+        onChange={(e) => changeValue(e, id)}
+        onKeyDown={(e) => keyDownActive(e, id)}
+      />
+      <Button onClick={() => deleteToDoItem(id)} variant="outline-secondary">
+        <FaTrash />
+      </Button>
+    </InputGroup>
   );
 };
 
