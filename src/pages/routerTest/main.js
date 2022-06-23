@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter, Route, Link, Routes } from "react-router-dom";
 import SimpleToDoList from "../Home/simpleToDo/ToDoListIndex.js";
 // import ToDoList from "../Home/NewToDoList/NewIndex.js";
-import ToDoList from "../Home/ToDoList/Index.js";
+import ToDoList from "../Home/ToDoListVer2/Index.js";
+import ToDoList2 from "../Home/ToDoListVer3/Index.js";
 import BootstrapTest from "../Home/bootstrapTest";
 import "../Home/i18nTest/i18n.js";
 import TestTranslation from "../Home/i18nTest/testTranslation.js";
@@ -36,6 +37,9 @@ const Main =()=> {
               <Link to="/ToDoList">ToDoList</Link>
             </li>
             <li>
+              <Link to="/ToDoList2">ToDoList(巢狀資料結構)</Link>
+            </li>
+            <li>
               <Link to="/BootstrapTest">Bootstrap</Link>
             </li>
             <li>
@@ -62,6 +66,7 @@ const Main =()=> {
             <Route path="/" element={<Home />} />
             <Route path="/SimpleToDoList" element={<SimpleToDoList />} />
             <Route path="/ToDoList" element={<ToDoList />} />
+            <Route path="/ToDoList2" element={<ToDoList2 />} />
             <Route path="/Minesweeper" element={<Minesweeper />} />
             <Route path="/Shopping" element={<Shopping />} />
             <Route path="/BootstrapTest" element={<BootstrapTest />} />

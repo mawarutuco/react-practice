@@ -2,17 +2,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, InputGroup, Row, Col } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { BsArrowReturnRight } from "react-icons/bs";
+import { focusNode } from "./active";
 
-//刪除新增詢問
 //取消小孩checkbox，爸爸也要取消
 //家族縮排
+//刪除新增詢問
+//優化抽出程式碼
 
 const 最底層 = 2;
 
 const ToDoItem = ({ obj, item }) => {
   const { toDo, setToDo, setId, newId } = obj;
 
-  const { id, value, isChecked, x } = item;
+  const { id, value, isChecked, ToDoX, ToDoY } = item;
 
   const changeCheck = (id) => {
     let checked;
@@ -21,12 +23,12 @@ const ToDoItem = ({ obj, item }) => {
     let tmp = toDo.map((item) => {
       if (keep) {
         if (item.id === id) {
-          縮 = item.x;
+          縮 = item.ToDoX;
           item.isChecked = !item.isChecked;
           checked = item.isChecked;
-        } else if (item.x === 縮) keep = false;
+        } else if (item.ToDoX === 縮) keep = false;
 
-        if (item.x > 縮) {
+        if (item.ToDoX > 縮) {
           item.isChecked = checked;
         }
       }
@@ -44,7 +46,21 @@ const ToDoItem = ({ obj, item }) => {
     setToDo(tmp);
   };
 
+  const 排Y = () => {
+    let 縮 = 99;
+    let 設Y = 0;
+    let tmp = toDo.map((item) => {
+      if (item.ToDoY <= 縮) ++設Y;
+      縮 = item.ToDoX;
+      設Y = item.ToDoY;
+      return item;
+    });
+    setToDo(tmp)
+    console.log(tmp);
+  };
+
   const deleteToDoItem = (id) => {
+    排Y()
     let 縮 = 99;
     let start = -1;
     let count = 1;
@@ -52,11 +68,11 @@ const ToDoItem = ({ obj, item }) => {
     let tmp = [...toDo];
     toDo.forEach((item, idx) => {
       if (keep) {
-        if (item.x > 縮) count++;
-        if (item.x === 縮) keep = false;
+        if (item.ToDoX > 縮) count++;
+        if (item.ToDoX === 縮) keep = false;
         if (item.id === id) {
           start = idx;
-          縮 = item.x;
+          縮 = item.ToDoX;
         }
       }
     });
@@ -71,6 +87,8 @@ const ToDoItem = ({ obj, item }) => {
   };
 
   const keyDownActive = (e, id) => {
+    排Y()
+
     switch (e.keyCode) {
       //enter
       case 13: {
@@ -82,15 +100,15 @@ const ToDoItem = ({ obj, item }) => {
           碰到了 ? 後.push(item) : 前.push(item);
           if (item.id === id) {
             碰到了 = true;
-            縮 = item.x;
+            縮 = item.ToDoX;
           }
         });
 
         if (後.length > 0) {
-          if (後[0].x !== 縮) {
+          if (後[0].ToDoX !== 縮) {
             let count = 0;
             後.map((item) => {
-              if (item.x > 縮) {
+              if (item.ToDoX > 縮) {
                 前.push(item);
                 count++;
               }
@@ -101,7 +119,7 @@ const ToDoItem = ({ obj, item }) => {
 
         setToDo([
           ...前,
-          { id: newId, value: "", x: 縮, isChecked: false },
+          { ToDoX: 縮, id: newId, value: "", isChecked: false },
           ...後,
         ]);
         setId((pre) => pre + 1);
@@ -110,12 +128,40 @@ const ToDoItem = ({ obj, item }) => {
 
       //tab
       case 9: {
-        //shift+tab
+        //shift+tab 目前可以帶著小孩縮排，但位置不會動
         if (e.shiftKey) {
           e.preventDefault();
+          let keep = false;
+          let 前 = [];
+          let 主角家 = [];
+          let 後 = [];
+          let 縮 = 99;
+
+          //如果要移動的位置是爺爺級的就不動
+          let pos = toDo.findIndex((item) => item.id === id);
+          if (toDo[pos].ToDoX === 0) return;
+
+          // toDo.forEach((item, index) => {
+          //   if (item.ToDoX >= 縮) keep = false;
+          //   if (keep) 主角家.push(item);
+          //   if (index === pos) {
+          //     縮 = item.ToDoX;
+          //     主角家.push(item);
+          //     keep = true;
+          //   }
+          //   (!keep)? 前.push(item) : 後.push(item);
+          // });
+          // console.log([...前, "--", ...主角家, "--", ...後]);
+
           let tmp = toDo.map((item) => {
-            if (item.id === id) item.x -= 1;
-            if (item.x < 0) item.x = 0;
+            if (item.ToDoX <= 縮) keep = false;
+            if (keep && item.ToDoX > 縮) item.ToDoX -= 1;
+            if (item.id === id) {
+              keep = true;
+              縮 = item.ToDoX;
+              item.ToDoX -= 1;
+            }
+            if (item.ToDoX < 0) item.ToDoX = 0;
             return item;
           });
           setToDo(tmp);
@@ -123,8 +169,8 @@ const ToDoItem = ({ obj, item }) => {
           //tab
           e.preventDefault();
           let tmp = toDo.map((item) => {
-            if (item.id === id) item.x += 1;
-            if (item.x > 最底層) item.x = 最底層;
+            if (item.id === id) item.ToDoX += 1;
+            if (item.ToDoX > 最底層) item.ToDoX = 最底層;
             return item;
           });
           setToDo(tmp);
@@ -135,28 +181,53 @@ const ToDoItem = ({ obj, item }) => {
       //↑
       case 38: {
         if (e.ctrlKey || e.metaKey) {
+          let pos = toDo.findIndex((item) => item.id === id);
+          if (pos === 0) return;
+
           if (toDo[0].id === id) return;
           let 前 = [];
-          let 主角 = "";
+          let 主角 = [];
           let 後 = [];
-          let 碰到了 = false;
-          toDo.forEach((item) => {
-            if (item.id === id) {
-              碰到了 = true;
-              主角 = item;
+          let 縮 = 99;
+          let keep = false;
+          toDo.forEach((item, index) => {
+            if (item.ToDoX <= 縮) keep = false;
+            if (index === pos) {
+              keep = true;
+              主角.push(item);
+              縮 = item.ToDoX;
             } else {
-              碰到了 ? 後.push(item) : 前.push(item);
+              if (keep) {
+                主角.push(item);
+              } else {
+                index > pos ? 後.push(item) : 前.push(item);
+              }
             }
           });
 
-          後.unshift(前.pop());
+          // 後.unshift(前.pop());
+          console.log([...前, "-", ...主角, "-", ...後]);
+          setToDo([...前, ...主角, ...後]);
 
-          setToDo([...前, 主角, ...後]);
+          //原始
+          // let 前 = [];
+          // let 主角 = [];
+          // let 後 = [];
+          // let keep = false;
+          // toDo.forEach((item, index) => {
+          //   if (index === pos) {
+          //     keep = true;
+          //     主角 = item;
+          //   } else {
+          //     keep ? 後.push(item) : 前.push(item);
+          //   }
+          // });
+
+          // 後.unshift(前.pop());
+
+          // setToDo([...前, 主角, ...後]);
         } else {
-          let idx = toDo.findIndex((n) => n.id === id);
-          if (idx === -1 || idx === 0) return;
-          let newIdx = idx - 1;
-          document.getElementsByClassName("form-control")[newIdx].focus();
+          focusNode(id, -1, toDo);
         }
         break;
       }
@@ -182,16 +253,9 @@ const ToDoItem = ({ obj, item }) => {
 
           setToDo([...前, 主角, ...後]);
         } else {
-          let idx = toDo.findIndex((n) => n.id === id);
-          if (idx === -1 || idx === toDo.length - 1) return;
-          let newIdx = idx + 1;
-          document.getElementsByClassName("form-control")[newIdx].focus();
+          focusNode(id, 1, toDo);
         }
         break;
-      }
-
-      //backspace
-      case 8: {
       }
     }
   };
@@ -203,7 +267,7 @@ const ToDoItem = ({ obj, item }) => {
 
   return (
     <InputGroup>
-      {縮(x)}
+      {縮(ToDoX)}
       <InputGroup.Checkbox
         checked={isChecked}
         onChange={() => changeCheck(id)}
