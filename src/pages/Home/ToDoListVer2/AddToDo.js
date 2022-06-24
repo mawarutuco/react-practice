@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { GrAdd } from "react-icons/gr";
+import {getLastToDoY} from './active'
 
 const AddToDo = ({ obj }) => {
   const { toDo, setToDo, setId, newId } = obj;
@@ -8,7 +9,7 @@ const AddToDo = ({ obj }) => {
   const add = () => {
     setToDo((pre) => [
       ...pre,
-      { id: newId, value: "", x: 0, y: 0, isChecked: false },
+      { ToDoX: 0, ToDoY: getLastToDoY(toDo), id: newId, value: "", isChecked: false },
     ]);
     setId((pre) => pre + 1);
   };

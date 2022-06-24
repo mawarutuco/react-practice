@@ -5,13 +5,13 @@ import ToDo from "./ToDo";
 import AddToDo from "./AddToDo";
 import { showPage } from "./active";
 
-export const dataList = [
+const dataList = [
   { ToDoX: 0, ToDoY: 0, id: 0, value: "爺A", isChecked: false },
-  { ToDoX: 1, ToDoY: 0, id: 1, value: "子A", isChecked: false },
-  { ToDoX: 1, ToDoY: 0, id: 2, value: "子B", isChecked: false },
-  { ToDoX: 2, ToDoY: 0, id: 3, value: "孫", isChecked: false },
-  { ToDoX: 0, ToDoY: 1, id: 4, value: "阿公", isChecked: false },
-  { ToDoX: 1, ToDoY: 1, id: 5, value: "阿公的子", isChecked: false },
+  { ToDoX: 1, ToDoY: 1, id: 1, value: "子A", isChecked: false },
+  { ToDoX: 1, ToDoY: 2, id: 2, value: "子B", isChecked: false },
+  { ToDoX: 2, ToDoY: 3, id: 3, value: "孫", isChecked: false },
+  { ToDoX: 0, ToDoY: 4, id: 4, value: "阿公", isChecked: false },
+  { ToDoX: 1, ToDoY: 5, id: 5, value: "阿公的子", isChecked: false },
 ];
 
 const Index = () => {
