@@ -13,8 +13,8 @@ import {
   deleteToDoItem,
   縮排,
   取消縮排,
-  往上搬移,
-  往下搬移,
+  moveUp,
+  moveDown,
 } from "./active";
 
 //刪除新增詢問
@@ -75,6 +75,7 @@ const ToDoItem = ({ obj, item }) => {
 
   const keyDownActive = (e, id) => {
     switch (e.keyCode) {
+
       //enter
       case 13: {
         let keep = true;
@@ -103,6 +104,7 @@ const ToDoItem = ({ obj, item }) => {
         tmpArr.sort(function (a, b) {
           return a.ToDoY - b.ToDoY;
         });
+
         setId((pre) => pre + 1);
         setToDo(tmpArr);
         break;
@@ -110,13 +112,12 @@ const ToDoItem = ({ obj, item }) => {
 
       //tab
       case 9: {
+        e.preventDefault();
         //shift+tab
         if (e.shiftKey) {
-          e.preventDefault();
           取消縮排(toDo, setToDo, id);
         } else {
           //tab
-          e.preventDefault();
           縮排(toDo, setToDo, id);
         }
         break;
@@ -125,7 +126,7 @@ const ToDoItem = ({ obj, item }) => {
       //↑
       case 38: {
         if (e.ctrlKey || e.metaKey) {
-          往上搬移(toDo, setToDo, id);
+          moveUp(toDo, setToDo, id);
         } else {
           focusNode(id, -1, toDo);
         }
@@ -135,7 +136,7 @@ const ToDoItem = ({ obj, item }) => {
       //↓
       case 40: {
         if (e.ctrlKey || e.metaKey) {
-          往下搬移(toDo, setToDo, id);
+          moveDown(toDo, setToDo, id);
         } else {
           focusNode(id, 1, toDo);
         }
@@ -204,11 +205,11 @@ const MoreActive = ({ obj, item }) => {
 
         {/* <Dropdown.Divider /> */}
 
-        <Dropdown.Item onClick={() => 往上搬移(toDo, setToDo, id)}>
+        <Dropdown.Item onClick={() => moveUp(toDo, setToDo, id)}>
           {<FiArrowUp />}　往上搬移
         </Dropdown.Item>
 
-        <Dropdown.Item onClick={() => 往下搬移(toDo, setToDo, id)}>
+        <Dropdown.Item onClick={() => moveDown(toDo, setToDo, id)}>
           {<FiArrowDown />}　往下搬移
         </Dropdown.Item>
       </Dropdown.Menu>
