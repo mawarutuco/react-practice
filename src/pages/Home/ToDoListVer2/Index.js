@@ -13,10 +13,10 @@ const dataList = [
   { ToDoX: 1, ToDoY: 4, id: 4, value: "子C", isChecked: false },
   { ToDoX: 2, ToDoY: 5, id: 5, value: "孫A", isChecked: false },
   { ToDoX: 2, ToDoY: 6, id: 6, value: "孫B", isChecked: false },
-  // { ToDoX: 0, ToDoY: 7, id: 7, value: "爺", isChecked: false },
-  // { ToDoX: 1, ToDoY: 8, id: 8, value: "子", isChecked: false },
-  // { ToDoX: 1, ToDoY: 9, id: 9, value: "子2", isChecked: false },
-  // { ToDoX: 2, ToDoY: 10, id: 10, value: "孫", isChecked: false },
+  { ToDoX: 0, ToDoY: 7, id: 7, value: "爺", isChecked: false },
+  { ToDoX: 1, ToDoY: 8, id: 8, value: "子", isChecked: false },
+  { ToDoX: 1, ToDoY: 9, id: 9, value: "子2", isChecked: false },
+  { ToDoX: 2, ToDoY: 10, id: 10, value: "孫", isChecked: false },
 ];
 
 const Index = () => {
@@ -51,7 +51,7 @@ const Index = () => {
   const obj = { toDo, setToDo, setId, newId };
 
   return (
-    <Container>
+    <Container className='m-5'>
       <Card style={boxShadow}>
         <Card.Title>
           <h1>ToDoList</h1>

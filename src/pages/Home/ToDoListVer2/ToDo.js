@@ -1,21 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Form, Button, InputGroup, NavDropdown } from "react-bootstrap";
+import React, { useEffect, useRef, forwardRef } from "react";
+import { Form, Button, InputGroup, Dropdown } from "react-bootstrap";
+import swal from "sweetalert";
 import { FaTrash } from "react-icons/fa";
-import { FiMoreVertical } from "react-icons/fi";
-import { BsArrowReturnRight } from "react-icons/bs";
+import { FiMoreVertical, FiArrowUp, FiArrowDown } from "react-icons/fi";
+import { TbIndentDecrease, TbIndentIncrease } from "react-icons/tb";
 import {
   focusNode,
   getLastToDoY,
   putIndent,
-  最底層,
   checkFatherCheckBox,
-  排Y,
-  checkBrotherNotToBeFather,
-  縮排或取消縮排,
+  deleteCountAndStart,
+  deleteToDoItem,
+  縮排,
+  取消縮排,
+  往上搬移,
+  往下搬移,
 } from "./active";
 
-//取消小孩checkbox，爸爸也要取消
-//家族縮排
 //刪除新增詢問
 //優化抽出程式碼
 
@@ -23,7 +24,6 @@ const ToDoItem = ({ obj, item }) => {
   const { toDo, setToDo, setId, newId } = obj;
 
   const { id, value, isChecked, ToDoX, ToDoY } = item;
-  const getToDoLastIdx = toDo.length - 1;
 
   const changeCheck = (id) => {
     let keep = true;
@@ -44,7 +44,7 @@ const ToDoItem = ({ obj, item }) => {
       return item;
     });
 
-    if (tmpCheck === false) checkFatherCheckBox(tmpY, tmpArr);
+    if (tmpCheck === false) checkFatherCheckBox(tmpX, tmpY, tmpArr);
 
     setToDo(tmpArr);
   };
@@ -57,24 +57,20 @@ const ToDoItem = ({ obj, item }) => {
     setToDo(tmpArr);
   };
 
-  const deleteToDoItem = (id) => {
-    let count = 1;
-    let keep = true;
-    let tmpArr = [...toDo];
-    let tmpIdx = toDo.findIndex((n) => n.id === id);
-    let tmpToDoX = toDo[tmpIdx].ToDoX;
-    toDo.forEach((item, index) => {
-      if (keep && index > tmpIdx) {
-        if (item.ToDoX > tmpToDoX) {
-          count++;
-        } else {
-          keep = false;
-        }
-      }
+  const doDelete = (id) => {
+    const { count, tmpIdx } = deleteCountAndStart(id, toDo);
+
+    if (count === 1) return deleteToDoItem(count, tmpIdx, toDo, setToDo);
+
+    swal({
+      title: "確定刪除?",
+      text: "若刪除父階，該父階下的所有子階也會被刪除",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) deleteToDoItem(count, tmpIdx, toDo, setToDo);
     });
-    tmpArr.splice(tmpIdx, count);
-    排Y(tmpArr);
-    setToDo(tmpArr);
   };
 
   const keyDownActive = (e, id) => {
@@ -109,7 +105,6 @@ const ToDoItem = ({ obj, item }) => {
         });
         setId((pre) => pre + 1);
         setToDo(tmpArr);
-        console.log(tmpArr);
         break;
       }
 
@@ -118,54 +113,11 @@ const ToDoItem = ({ obj, item }) => {
         //shift+tab
         if (e.shiftKey) {
           e.preventDefault();
-
-          let tmpIdx = toDo.findIndex((item) => item.id === id);
-          let tmpItem = toDo[tmpIdx];
-          if (tmpItem.ToDoX === 0) return;
-          let tmpArr = [...toDo];
-
-          //如果A跟B同階為兄弟，A升級後不能成為B的爸爸，所以A升級後要扔到下一個長輩或同階的上面
-          if (
-            tmpIdx !== getToDoLastIdx &&
-            tmpItem.ToDoX === toDo[tmpIdx + 1].ToDoX
-            //不能只判斷樓下一位...贛
-          ) {
-            // checkBrotherNotToBeFather(tmpIdx, tmpArr);
-            let keep = true;
-            let tmpItem = tmpArr[tmpIdx];
-
-            let 下一個長輩同階 = tmpArr.findIndex(
-              (item, index) => index > tmpIdx && item.ToDoX <= tmpItem.ToDoX - 1
-            );
-
-            let newTmpToDoY =
-              (下一個長輩同階 === -1 ? tmpArr.length : 下一個長輩同階) - 1;
-            tmpItem.ToDoY = newTmpToDoY;
-            tmpArr.map((item, index) => {
-              if (index === 下一個長輩同階) keep = false;
-              if (keep && index > tmpIdx) item.ToDoY -= 1;
-            });
-          }
-
-          縮排或取消縮排(tmpIdx, -1, tmpArr);
-
-          tmpArr.sort(function (a, b) {
-            return a.ToDoY - b.ToDoY;
-          });
-
-          setToDo(tmpArr);
+          取消縮排(toDo, setToDo, id);
         } else {
           //tab
           e.preventDefault();
-
-          let tmpIdx = toDo.findIndex((item) => item.id === id);
-          let tmpItem = toDo[tmpIdx];
-          if (tmpItem.ToDoX === 最底層 || tmpIdx === 0) return;
-          if (toDo[tmpIdx - 1].ToDoX < tmpItem.ToDoX) return;
-
-          let tmpArr = [...toDo];
-          縮排或取消縮排(tmpIdx, 1, tmpArr);
-          setToDo(tmpArr);
+          縮排(toDo, setToDo, id);
         }
         break;
       }
@@ -173,8 +125,7 @@ const ToDoItem = ({ obj, item }) => {
       //↑
       case 38: {
         if (e.ctrlKey || e.metaKey) {
-          let tmpIdx = toDo.findIndex((item) => item.id === id);
-          if (tmpIdx === 0) return;
+          往上搬移(toDo, setToDo, id);
         } else {
           focusNode(id, -1, toDo);
         }
@@ -184,55 +135,7 @@ const ToDoItem = ({ obj, item }) => {
       //↓
       case 40: {
         if (e.ctrlKey || e.metaKey) {
-          if (toDo[getToDoLastIdx].id === id) return;
-
-          let tmpIdx = toDo.findIndex((n) => n.id === id);
-          let tmpItem = toDo[tmpIdx];
-          let tmpX = tmpItem.ToDoX;
-
-          //先找最近可換的
-          let changeIdx = toDo.findIndex((n, index) => {
-            return index > tmpIdx && n.ToDoX === tmpX;
-          });
-          if (changeIdx === -1) return;
-
-          //防止跟別人家同階互換
-          if (toDo[changeIdx - 1].ToDoX < tmpX) return;
-
-          let HYO = tmpIdx;
-          toDo[changeIdx].ToDoY = HYO;
-          HYO += 1;
-
-          let keep = true;
-          let tmpArr = toDo.map((item, index) => {
-            if (index > changeIdx) {
-              if (item.ToDoX <= tmpX) keep = false;
-              if (keep) {
-                item.ToDoY = HYO;
-                HYO += 1;
-              }
-            }
-            return item;
-          });
-
-          toDo[tmpIdx].ToDoY = HYO;
-          HYO += 1;
-          keep = true;
-          tmpArr.map((item, index) => {
-            if (index > tmpIdx) {
-              if (item.ToDoX <= tmpX) keep = false;
-              if (keep) {
-                item.ToDoY = HYO;
-                HYO += 1;
-              }
-            }
-            return item;
-          });
-          tmpArr.sort(function (a, b) {
-            return a.ToDoY - b.ToDoY;
-          });
-          setToDo(tmpArr);
-          console.log(tmpArr);
+          往下搬移(toDo, setToDo, id);
         } else {
           focusNode(id, 1, toDo);
         }
@@ -261,19 +164,55 @@ const ToDoItem = ({ obj, item }) => {
         onChange={(e) => changeValue(e, id)}
         onKeyDown={(e) => keyDownActive(e, id)}
       />
-      <Button onClick={() => deleteToDoItem(id)} variant="outline-secondary">
+      <MoreActive obj={obj} item={item} />
+      <Button onClick={() => doDelete(id)} variant="outline-secondary">
         <FaTrash />
       </Button>
-      <NavDropdown variant="outline-secondary" title="" id="nav-dropdown">
-        <NavDropdown.Item eventKey="4.0" onClick={() =>deleteToDoItem(id)}>先放刪除測試OK</NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item eventKey="4.1" >縮排</NavDropdown.Item>
-        <NavDropdown.Item eventKey="4.2">取消縮排</NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item eventKey="4.3">往上搬移</NavDropdown.Item>
-        <NavDropdown.Item eventKey="4.4">往下搬移</NavDropdown.Item>
-      </NavDropdown>
     </InputGroup>
+  );
+};
+
+const MoreActive = ({ obj, item }) => {
+  const { toDo, setToDo } = obj;
+  const { id } = item;
+
+  const CustomToggle = forwardRef(({ children, onClick }, ref) => (
+    <Button
+      variant="outline-secondary"
+      ref={ref}
+      onClick={(e) => {
+        onClick(e);
+      }}
+    >
+      {children}
+    </Button>
+  ));
+
+  return (
+    <Dropdown>
+      <Dropdown.Toggle as={CustomToggle} variant="outline-secondary">
+        <FiMoreVertical />
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        <Dropdown.Item onClick={() => 縮排(toDo, setToDo, id)}>
+          {<TbIndentIncrease />}　縮排
+        </Dropdown.Item>
+
+        <Dropdown.Item onClick={() => 取消縮排(toDo, setToDo, id)}>
+          {<TbIndentDecrease />}　取消縮排
+        </Dropdown.Item>
+
+        {/* <Dropdown.Divider /> */}
+
+        <Dropdown.Item onClick={() => 往上搬移(toDo, setToDo, id)}>
+          {<FiArrowUp />}　往上搬移
+        </Dropdown.Item>
+
+        <Dropdown.Item onClick={() => 往下搬移(toDo, setToDo, id)}>
+          {<FiArrowDown />}　往下搬移
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
   );
 };
 
