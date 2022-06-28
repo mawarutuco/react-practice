@@ -1,4 +1,4 @@
-export const 最底層 = 4;
+export const 最底層 = 3;
 
 const indent = "     ";
 export const putIndent = (ToDoX) => {
@@ -13,7 +13,7 @@ export const focusNode = (id, detail, toDo) => {
   if (newIdx >= 0 && newIdx < toDo.length)
     document
       .querySelectorAll("input[class='ToDoListInput form-control']")
-      [newIdx].focus();
+    [newIdx].focus();
 };
 
 export const getLastToDoY = (toDo) => {
@@ -43,7 +43,7 @@ export const deleteCountAndStart = (id, toDo) => {
   return { count, tmpIdx };
 };
 
-export const 排Y = (tmpArr) => {
+const 排Y = (tmpArr) => {
   let tmpY = 0;
   tmpArr.map((item) => {
     item.ToDoY = tmpY;
@@ -89,32 +89,38 @@ export const 縮排 = (toDo, setToDo, id) => {
   setToDo(tmpArr);
 };
 
+const 計算範圍 = (x, y, toDo) => {
+  let count = 1
+  let keep = true
+  toDo.forEach((item, index) => {
+    if (keep && index > y) {
+      if (x < item.ToDoX) count++
+      if (x >= item.ToDoX) keep = false
+    }
+  })
+  return count
+}
+
+const 移動 = (前, 前count, 後, 後count, arr) => {
+  arr.map((item, index) => {
+    if (index >= 前 && index < 後) { item.ToDoY += 後count }
+    if (index >= 後 && index < (後 + 後count)) { item.ToDoY -= 前count }
+  })
+}
+
 export const 取消縮排 = (toDo, setToDo, id) => {
   let tmpIdx = toDo.findIndex((item) => item.id === id);
   let tmpItem = toDo[tmpIdx];
-  if (tmpItem.ToDoX === 0) return;
+  let { ToDoX: tmpX, ToDoY: tmpY } = tmpItem
+  if (tmpX === 0) return;
   let tmpArr = [...toDo];
 
-  //如果A跟B同階為兄弟，A升級後不能成為B的爸爸，所以A升級後要扔到下一個長輩或同階的上面
-  if (
-    tmpIdx !== toDo.length - 1 &&
-    tmpItem.ToDoX === toDo[tmpIdx + 1].ToDoX
-    //不能只判斷樓下一位...
-  ) {
-    let keep = true;
-    let tmpItem = tmpArr[tmpIdx];
+  let 前count = 計算範圍(tmpX, tmpY, toDo)
+  let 下一位Y = (tmpY + 前count)
 
-    let 下一個長輩同階 = tmpArr.findIndex(
-      (item, index) => index > tmpIdx && item.ToDoX <= tmpItem.ToDoX - 1
-    );
-
-    let newTmpToDoY =
-      (下一個長輩同階 === -1 ? tmpArr.length : 下一個長輩同階) - 1;
-    tmpItem.ToDoY = newTmpToDoY;
-    tmpArr.map((item, index) => {
-      if (index === 下一個長輩同階) keep = false;
-      if (keep && index > tmpIdx) item.ToDoY -= 1;
-    });
+  if (toDo[下一位Y] !== undefined && tmpX <= toDo[下一位Y].ToDoX) {
+    let 後count = 計算範圍((tmpX - 1), 下一位Y, toDo)
+    移動(tmpIdx, 前count, 下一位Y, 後count, tmpArr)
   }
 
   調整子階縮排(tmpIdx, -1, tmpArr);
@@ -176,7 +182,6 @@ export const moveUp = (toDo, setToDo, id) => {
     return a.ToDoY - b.ToDoY;
   });
 
-  console.log(tmpArr);
   setToDo(tmpArr);
 };
 
@@ -194,36 +199,13 @@ export const moveDown = (toDo, setToDo, id) => {
 
   //防止跟別人家同階互換
   if (toDo[changeIdx - 1].ToDoX < tmpX) return;
-
-  let currentIdx = originalIdx;
-  toDo[changeIdx].ToDoY = currentIdx;
-
-  let keep = true;
-  let tmpArr = toDo.map((item, index) => {
-    if (index > changeIdx) {
-      if (item.ToDoX <= tmpX) keep = false;
-      if (keep) {
-        currentIdx += 1;
-        item.ToDoY = currentIdx;
-      }
-    }
-    return item;
-  });
-
-  ++currentIdx;
-  toDo[originalIdx].ToDoY = currentIdx;
-  keep = true;
-  tmpArr.map((item, index) => {
-    if (index > originalIdx) {
-      if (item.ToDoX <= tmpX) keep = false;
-      if (keep) {
-        ++currentIdx;
-        item.ToDoY = currentIdx;
-      }
-    }
-    return item;
-  });
-
+let tmpArr=[...toDo]
+  let 前count = 計算範圍(tmpX, originalIdx, toDo)
+  let 下一位Y = (originalIdx + 前count)
+  let 後count = 計算範圍(tmpX, 下一位Y, toDo)
+  console.log(originalIdx,前count,下一位Y,後count);
+  移動(originalIdx,前count,下一位Y,後count,tmpArr)
+ 
   tmpArr.sort((a, b) => {
     return a.ToDoY - b.ToDoY;
   });
@@ -235,11 +217,15 @@ export const moveDown = (toDo, setToDo, id) => {
 //import到index.js
 export const showPage = (page, toDo) => {
   switch (page) {
-    case "ShowAll":
+    case "All":
       return toDo;
-    case "ShowActive":
+    case "Active":
       return toDo.filter((item) => item.isChecked === false);
-    case "ShowCompleted":
+    case "Completed":
       return toDo.filter((item) => item.isChecked === true);
   }
 };
+
+// 計算範圍 x,y
+// 執行縮排 2
+// 執行移動 2
