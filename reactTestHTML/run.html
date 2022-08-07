@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mines</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+      .step {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+      }
+
+      .stepped {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+        background-color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      let timer;
+      const Stage = () => {
+        const { useState, useEffect } = React;
+
+        //每行幾個
+        let row = 10;
+        let col = 5;
+        const [stage, setStage] = useState([]);
+
+        const createNewStage = () => {
+          let index = 1;
+          let tmp = [];
+          for (let i = 0; i < col; i++) {
+            for (let j = 0; j < row; j++) {
+              tmp.push({
+                id: index,
+                x: i,
+                y: j,
+                isStepped: false,
+              });
+              index++;
+            }
+          }
+          return tmp;
+        };
+
+        const reset = () => setStage(createNewStage());
+
+        useEffect(() => reset(), []);
+
+        const Step = ({ n }) => {
+          let firstTime = true;
+
+          const changeStepState = () => {
+            let tmpArr = stage.map((item) => {
+              if (item === n) item.isStepped = !item.isStepped;
+              return item;
+            });
+            setStage(tmpArr);
+          };
+
+          return (
+            <button
+              key={n}
+              className={n.isStepped ? "stepped" : "step"}
+              onClick={changeStepState}
+            />
+          );
+        };
+
+        const play = () => {
+          clearInterval(timer);
+
+          const playIt = () => {
+            // let firstStep = false;
+            let thisStep = false;
+            let nextStep = false;
+            const tmpArr = stage.map((n) => {
+              if (n.x === row && n.isStepped) firstStep = true;
+              thisStep = nextStep;
+              n.isStepped ? (nextStep = true) : (nextStep = false);
+              thisStep ? (n.isStepped = true) : (n.isStepped = false);
+              thisStep = false;
+              return n;
+            });
+            // if (firstStep) {
+            //   tmpArr[0].isStepped = true;
+            //   firstStep = false;
+            // }
+            console.log(tmpArr);
+            setStage(tmpArr);
+          };
+
+          timer = setInterval(() => {
+            playIt();
+          }, 500);
+        };
+
+        const stopPlay = () => clearInterval(timer);
+
+        return (
+          <div>
+            {stage.map((n) => (
+              <span>
+                <Step n={n} />
+                {n.y === row && <br />}
+              </span>
+            ))}
+            <br />
+            <button onClick={reset}>RESET</button>
+            <button onClick={() => console.log(stage)}>LOG</button>
+            <button onClick={play}>PLAY</button>
+            <button onClick={stopPlay}>STOP</button>
+          </div>
+        );
+      };
+
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+      app.render(<Stage />);
+    </script>
+  </body>
+</html>
