@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mines</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+      .step {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+      }
+
+      .stepped {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+        background-color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      const Stage = () => {
+        const { useState, useEffect } = React;
+
+        //每行幾個
+        let hard = 5;
+        const [stage, setStage] = useState([]);
+
+        const createNewStage = () => {
+          let index = 1;
+          let tmp = [];
+          for (let i = 1; i <= hard; i++) {
+            for (let j = 1; j <= hard; j++) {
+              tmp.push({
+                id: index,
+                x: i,
+                y: j,
+                isStepped: false,
+                isBomb: false,
+              });
+              index++;
+            }
+          }
+          return tmp;
+        };
+
+        const reset = () => setStage(createNewStage());
+
+        useEffect(() => reset(), []);
+
+        const Step = ({ n }) => {
+          // useEffect(() => , []);
+
+          let firstTime = true;
+
+          const changeStepState = () => {
+            let tmpArr = stage.map((item) => {
+              if (item === n) item.isStepped = true;
+              return item;
+            });
+            setStage(tmpArr);
+          };
+
+          const getAround = () => {
+            let around = [];
+            let { x, y } = n;
+            for (let i = x - 1; i <= x + 1; i++) {
+              for (let j = y - 1; j <= y + 1; j++) {
+                if (i !== x || j !== y) around.push({ i, j });
+              }
+            }
+          };
+
+          const setBombs = () => {
+            const bombs = new Set();
+            while (bombs.size <= hard) {
+              let randomNum = Math.ceil(Math.random() * Math.pow(hard, 2));
+              if (randomNum !== n.id) bombs.add(randomNum);
+            }
+
+            // let tmpArr = 
+            setStage()
+          };
+
+          const doStepClick = () => {
+            changeStepState();
+            getAround();
+            // if(firstTime) setBombs()
+          };
+
+          return (
+            <button
+              key={n}
+              className={n.isStepped ? "stepped" : "step"}
+              onClick={doStepClick}
+              disabled={n.isStepped}
+            />
+          );
+        };
+
+        return (
+          <div>
+            {stage.map((n) => (
+              <span>
+                <Step n={n} />
+                {n.y === hard && <br />}
+              </span>
+            ))}
+            <button onClick={reset}>RESET</button>
+          </div>
+        );
+      };
+
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+      app.render(<Stage />);
+    </script>
+  </body>
+</html>
