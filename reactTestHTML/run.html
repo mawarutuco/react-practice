@@ -44,25 +44,27 @@
 
         //每行幾個
         let row = 10;
+        let col = 4;
         const [stage, setStage] = useState([]);
-        const colStage = [1, 2, 3, 4];
 
         const createNewStage = () => {
           let index = 1;
           let tmp = [];
-          for (let i = 0; i < row; i++) {
-            tmp.push({
-              id: index,
-              x: i,
-              isStepped: false,
-            });
-            index++;
+          for (let i = 1; i <= col; i++) {
+            for (let j = 1; j <= row; j++) {
+              tmp.push({
+                id: index,
+                x: j,
+                y: i,
+                isStepped: false,
+              });
+              index++;
+            }
           }
           return tmp;
         };
 
         const reset = () => setStage(createNewStage());
-
         useEffect(() => reset(), []);
 
         const Step = ({ n }) => {
@@ -115,21 +117,16 @@
 
         const stopPlay = () => clearInterval(timer);
 
-        const Row = () => {
-          return (
-            <div>
-              {stage.map((n) => (
-                <Step n={n} />
-              ))}
-            </div>
-          );
-        };
-
         return (
           <div>
-            {colStage.map((n) => (
-              <Row n={n} />
-            ))}
+            {stage.map((n) => {
+              return (
+                <span>
+                  <Step n={n} />
+                  {n.x === row && <br />}
+                </span>
+              );
+            })}
             <br />
             <button onClick={reset}>RESET</button>
             <button onClick={() => console.log(stage)}>LOG</button>
