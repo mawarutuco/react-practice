@@ -64,7 +64,10 @@
           return tmp;
         };
 
-        const reset = () => setStage(createNewStage());
+        const reset = () => {
+          stopPlay();
+          setStage(createNewStage());
+        };
         useEffect(() => reset(), []);
 
         const Step = ({ n }) => {
@@ -89,30 +92,44 @@
 
         const play = () => {
           clearInterval(timer);
+          let timeDelate = 500;
 
           const playIt = () => {
-            // let firstStep = false;
+            if (stage.every((n) => !n.isStepped)) clearInterval(timer);
+            let lastStep = false;
+            let lastStepY = -1;
             let thisStep = false;
             let nextStep = false;
+
             const tmpArr = stage.map((n) => {
-              if (n.x === row && n.isStepped) firstStep = true;
-              thisStep = nextStep;
-              n.isStepped ? (nextStep = true) : (nextStep = false);
-              thisStep ? (n.isStepped = true) : (n.isStepped = false);
-              thisStep = false;
+
+              if (n.x === row && n.isStepped) {
+                lastStep = true;
+                lastStepY = n.y;
+                n.isStepped = false
+              } else {
+                thisStep = nextStep;
+                n.isStepped ? (nextStep = true) : (nextStep = false);
+                thisStep ? (n.isStepped = true) : (n.isStepped = false);
+                thisStep = false;
+              }
+              
               return n;
             });
-            // if (firstStep) {
-            //   tmpArr[0].isStepped = true;
-            //   firstStep = false;
-            // }
+
+            if (lastStep) {
+              let index = tmpArr.findIndex((n) => n.y == lastStepY);
+              tmpArr[index].isStepped = true;
+              console.log(index);
+              lastStep = false;
+            }
             console.log(tmpArr);
             setStage(tmpArr);
           };
 
           timer = setInterval(() => {
             playIt();
-          }, 500);
+          }, timeDelate);
         };
 
         const stopPlay = () => clearInterval(timer);
