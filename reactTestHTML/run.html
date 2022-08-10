@@ -21,17 +21,19 @@
 
     <style>
       .step {
-        width: 30px;
-        height: 30px;
-        margin: 5px;
+        width: 35px;
+        height: 35px;
+        margin: 3px;
       }
 
       .stepped {
-        width: 30px;
-        height: 30px;
-        margin: 5px;
         background-color: gray;
       }
+
+      div {
+        margin: 15px;
+      }
+
     </style>
   </head>
   <body>
@@ -43,9 +45,10 @@
         const { useState, useEffect } = React;
 
         //每行幾個
-        let row = 30;
+        let row = 25;
         let col = 15;
         const [stage, setStage] = useState([]);
+        let timeDelate = 300;
 
         const createNewStage = () => {
           let index = 1;
@@ -84,7 +87,7 @@
           return (
             <button
               key={n}
-              className={n.isStepped ? "stepped" : "step"}
+              className={n.isStepped ? "step stepped" : "step"}
               onClick={changeStepState}
             />
           );
@@ -92,7 +95,7 @@
 
         const play = () => {
           clearInterval(timer);
-          let timeDelate = 500;
+
           if (stage.every((n) => !n.isStepped)) return;
 
           const playIt = () => {
@@ -103,8 +106,8 @@
             stage.forEach((n, index) => {
               if (n.x === row && n.isStepped) {
                 thisStep = nextStep;
-                nextStep = false;
                 thisStep ? (n.isStepped = true) : (n.isStepped = false);
+                nextStep = false;
                 firstStep.push(index - row + 1);
               } else {
                 thisStep = nextStep;
@@ -137,20 +140,11 @@
                 </span>
               );
             })}
-            <br />
-            <button onClick={reset}>RESET</button>
-            <button onClick={play}>PLAY</button>
-            <button onClick={stopPlay}>STOP</button>
-            <br />
-            <span>SPEED</span>
-            <input
-              type="range"
-              min="1"
-              max="100"
-              value="50"
-              class="slider"
-              id="myRange"
-            />
+            <div>
+              <button onClick={reset}>Reset</button>
+              <button onClick={() => play(timeDelate)}>Play</button>
+              <button onClick={stopPlay}>Stop</button>
+            </div>
           </div>
         );
       };
