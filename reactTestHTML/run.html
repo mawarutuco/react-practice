@@ -43,8 +43,8 @@
         const { useState, useEffect } = React;
 
         //每行幾個
-        let row = 10;
-        let col = 4;
+        let row = 30;
+        let col = 15;
         const [stage, setStage] = useState([]);
 
         const createNewStage = () => {
@@ -93,43 +93,36 @@
         const play = () => {
           clearInterval(timer);
           let timeDelate = 500;
+          if (stage.every((n) => !n.isStepped)) return;
 
           const playIt = () => {
-            if (stage.every((n) => !n.isStepped)) clearInterval(timer);
-            let lastStep = false;
-            let lastStepY = -1;
+            let firstStep = [];
             let thisStep = false;
             let nextStep = false;
 
-            const tmpArr = stage.map((n) => {
-
+            stage.forEach((n, index) => {
               if (n.x === row && n.isStepped) {
-                lastStep = true;
-                lastStepY = n.y;
-                n.isStepped = false
+                thisStep = nextStep;
+                nextStep = false;
+                thisStep ? (n.isStepped = true) : (n.isStepped = false);
+                firstStep.push(index - row + 1);
               } else {
                 thisStep = nextStep;
                 n.isStepped ? (nextStep = true) : (nextStep = false);
                 thisStep ? (n.isStepped = true) : (n.isStepped = false);
                 thisStep = false;
               }
-              
+            });
+
+            const tmpArr = stage.map((n, index) => {
+              if (firstStep.some((n) => n === index)) n.isStepped = true;
               return n;
             });
 
-            if (lastStep) {
-              let index = tmpArr.findIndex((n) => n.y == lastStepY);
-              tmpArr[index].isStepped = true;
-              console.log(index);
-              lastStep = false;
-            }
-            console.log(tmpArr);
             setStage(tmpArr);
           };
 
-          timer = setInterval(() => {
-            playIt();
-          }, timeDelate);
+          timer = setInterval(playIt, timeDelate);
         };
 
         const stopPlay = () => clearInterval(timer);
@@ -146,9 +139,18 @@
             })}
             <br />
             <button onClick={reset}>RESET</button>
-            <button onClick={() => console.log(stage)}>LOG</button>
             <button onClick={play}>PLAY</button>
             <button onClick={stopPlay}>STOP</button>
+            <br />
+            <span>SPEED</span>
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value="50"
+              class="slider"
+              id="myRange"
+            />
           </div>
         );
       };
