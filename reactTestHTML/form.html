@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>form</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- 連結Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous"
+    ></script>
+
+    <style></style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [date, setDate] = useState("");
+        useEffect(() => {
+          const today = new Date();
+          setDate(`${today.getMonth() + 1}/${today.getDate()}`);
+        }, []);
+
+        const [money, setMoney] = useState(0);
+        const [eventClass, setEventClass] = useState("");
+        const [other, setOther] = useState("");
+
+        function getValues() {
+          var rowData = { date, money, eventClass, other };
+
+          // 上傳資料
+          google.script.run.addData(rowData);
+          // 清除表單上的資料
+          setMoney(0);
+          setEventClass("");
+          setOther("");
+          // 完成後的訊息
+          alert("收到");
+        }
+
+        return (
+          <div className="m-5 container">
+            <MyInputGroup
+              text="日期"
+              inputValue={date}
+              onChangeEvent={(e) => setDate(e.target.value)}
+            />
+            <MyInputGroup
+              text="錢錢"
+              inputValue={money}
+              onChangeEvent={(e) => setMoney(e.target.value)}
+            />
+            <MySelect
+              inputValue={eventClass}
+              onChangeEvent={(e) => setEventClass(e.target.value)}
+            />
+            <MyInputGroup
+              text="其他"
+              value={other}
+              onChangeEvent={(e) => setOther(e.target.value)}
+            />
+            <div className="d-flex align-items-center justify-content-center">
+              <MyBtn name="存檔" doClick={getValues} />
+            </div>
+          </div>
+        );
+      }
+
+      const MyBtn = ({ name, doClick, btnClass = "m-1 btn" }) => {
+        return (
+          <button size="lg" className={btnClass} onClick={doClick}>
+            {name}
+          </button>
+        );
+      };
+
+      const MySelect = ({
+        value,
+        optionData = ["預設"],
+        onChangeEvent,
+        componentClass = "m-2 form-select",
+      }) => {
+        return (
+          <select
+            size="lg"
+            className={componentClass}
+            value={value}
+            onChange={onChangeEvent}
+          >
+            {optionData.map((n) => (
+              <option key={n}>{n}</option>
+            ))}
+          </select>
+        );
+      };
+
+      const MyInputGroup = ({
+        text,
+        inputValue,
+        onChangeEvent,
+        componentClass = "m-2 input-group",
+      }) => {
+        return (
+          <div size="lg" className={componentClass}>
+            <span className="input-group-text">{text}</span>
+            <input
+              className="form-control"
+              value={inputValue}
+              onChange={onChangeEvent}
+            />
+          </div>
+        );
+      };
+
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+      app.render(<App />);
+    </script>
+  </body>
+</html>
