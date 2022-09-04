@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- 連結Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous"
+    ></script>
+
+    <style></style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      const { createContext, useState, useContext } = React;
+      var 傳家寶 = createContext();
+
+      function 孫() {
+        let { secret, setSecret } = useContext(傳家寶);
+        let doTest = () => {
+          setSecret("改成這句");
+          document.title = Date();
+        };
+        return (
+          <div>
+            <h3>{secret}</h3>
+            <button className="btn bg-warning" onClick={doTest}>
+              test
+            </button>
+          </div>
+        );
+      }
+
+      function 兒() {
+        return <孫 />;
+      }
+
+      function 父() {
+        let [secret, setSecret] = useState("原本是這句");
+        let 傳家寶State = { secret, setSecret };
+
+        return (
+          <React.Fragment>
+            <傳家寶.Provider value={傳家寶State}>
+              <兒 />
+            </傳家寶.Provider>
+          </React.Fragment>
+        );
+      }
+
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+      app.render(<父 />);
+    </script>
+  </body>
+</html>
