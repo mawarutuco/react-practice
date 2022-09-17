@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OOXX</title>
+
+    <!-- React -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- sweataler2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      .stage-btn {
+        width: 100px;
+        height: 100px;
+        font-size: xx-large;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/babel">
+      
+      let turn = 1;
+      const Game = () => {
+        const { useState, useEffect } = React;
+
+        //每行幾個
+        const row = 3;
+        const col = 3;
+        const [stage, setStage] = useState([]);
+
+        const createNewStage = () => {
+          let index = 1;
+          let tmp = [];
+          for (let i = 1; i <= col; i++) {
+            for (let j = 1; j <= row; j++) {
+              tmp.push({
+                id: index,
+                x: j,
+                y: i,
+                state: "",
+              });
+              index++;
+            }
+          }
+          setStage(tmp);
+        };
+
+        useEffect(() => createNewStage(), []);
+
+        const Step = ({ n }) => {
+          const changeStepState = () => {
+            let tmpArr = stage.map((item) => {
+              if (item === n) {
+                item.state = turn % 2 ? "X" : "O";
+                turn++;
+              }
+              return item;
+            });
+            setStage(tmpArr);
+          };
+
+          const isGameOver = () => {
+            if (stage.every((n) => n.state !== "")) {
+              Swal.fire({ title: "平局!" });
+            }
+          };
+
+          const doClick = () => {
+            changeStepState();
+            isGameOver();
+          };
+
+          return (
+            <button
+              key={n}
+              className="btn border stage-btn"
+              onClick={doClick}
+              disabled={n.state}
+            >
+              {n.state}
+            </button>
+          );
+        };
+
+        const Stage = () => {
+          return (
+            <div>
+              {stage.map((n) => {
+                return (
+                  <span>
+                    <Step n={n} />
+                    {n.x === row && <br />}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        };
+
+        return (
+          <div className="mt-5 d-flex justify-content-center align-items-center flex-column">
+            <Stage />
+            <button className="mt-5 btn bg-warning" onClick={createNewStage}>
+              Reset
+            </button>
+          </div>
+        );
+      };
+
+      const app = ReactDOM.createRoot(document.getElementById("app"));
+      app.render(<Game />);
+    </script>
+  </body>
+</html>
