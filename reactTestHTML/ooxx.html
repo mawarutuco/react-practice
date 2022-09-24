@@ -40,6 +40,15 @@
         height: 100px;
         font-size: 50px;
       }
+      .X {
+        color: red;
+      }
+      .O {
+        color: blue;
+      }
+      body {
+        background-color: aliceblue;
+      }
     </style>
   </head>
   <body>
@@ -50,7 +59,6 @@
       const Game = () => {
         const { useState, useEffect } = React;
 
-        //每行幾個
         const [stage, setStage] = useState([]);
 
         const createNewStage = () => {
@@ -81,8 +89,11 @@
             return newStage;
           };
 
-          const showWin = (winner) =>
-            Swal.fire({ title: winner + " 勝利!" }).then(createNewStage);
+          const showWin = (winner, line = [0, 1, 2]) => {
+            Swal.fire({ title: winner + " 勝利!", position: "bottom" }).then(
+              createNewStage
+            );
+          };
 
           const someOneWin = (who, arr) => {
             //row [0,1,2] [3,4,5] [6,7,8]
@@ -106,6 +117,13 @@
               return showWin(who);
           };
 
+          const tie = (arr) => {
+            if (arr.every((n) => n !== ""))
+              Swal.fire({ title: "平局!", position: "bottom" }).then(
+                createNewStage
+              );
+          };
+
           const mainJudgeGame = (arr) => {
             let Xarr = [];
             let Oarr = [];
@@ -116,9 +134,7 @@
 
             someOneWin("X", Xarr);
             someOneWin("O", Oarr);
-
-            if (arr.every((n) => n !== ""))
-              Swal.fire({ title: "平局!" }).then(createNewStage);
+            tie(arr);
           };
 
           const doClick = () => {
@@ -129,11 +145,11 @@
           return (
             <button
               key={stageIndex}
-              className="btn border stage-btn"
+              className={"btn border stage-btn "}
               onClick={doClick}
               disabled={n}
             >
-              {n}
+              <strong className={n}>{n}</strong>
             </button>
           );
         };
@@ -155,6 +171,7 @@
 
         return (
           <div className="mt-5 d-flex justify-content-center align-items-center flex-column">
+            <h3>Play：{turn % 2 ? "X" : "O"}</h3>
             <Stage />
             <button className="mt-5 btn btn-primary" onClick={createNewStage}>
               Reset
