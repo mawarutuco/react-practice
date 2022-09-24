@@ -132,9 +132,9 @@
               if (n === "O") Oarr.push(index);
             });
 
+            tie(arr);
             someOneWin("X", Xarr);
             someOneWin("O", Oarr);
-            tie(arr);
           };
 
           const doClick = () => {
@@ -171,7 +171,7 @@
 
         return (
           <div className="mt-5 d-flex justify-content-center align-items-center flex-column">
-            <h3>Play：{turn % 2 ? "X" : "O"}</h3>
+            <h3>Player：{turn % 2 ? "X" : "O"}</h3>
             <Stage />
             <button className="mt-5 btn btn-primary" onClick={createNewStage}>
               Reset
