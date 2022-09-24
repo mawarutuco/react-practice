@@ -46,28 +46,20 @@
     <div id="app"></div>
 
     <script type="text/babel">
-      
       let turn = 1;
       const Game = () => {
         const { useState, useEffect } = React;
 
         //每行幾個
-        const row = 3;
-        const col = 3;
         const [stage, setStage] = useState([]);
 
         const createNewStage = () => {
-          let index = 1;
+          let stageIndex = 1;
           let tmp = [];
-          for (let i = 1; i <= col; i++) {
-            for (let j = 1; j <= row; j++) {
-              tmp.push({
-                id: index,
-                x: j,
-                y: i,
-                state: "",
-              });
-              index++;
+          for (let i = 1; i <= 3; i++) {
+            for (let j = 1; j <= 3; j++) {
+              tmp.push("");
+              stageIndex++;
             }
           }
           setStage(tmp);
@@ -75,37 +67,48 @@
 
         useEffect(() => createNewStage(), []);
 
-        const Step = ({ n }) => {
+        const Step = ({ n, stageIndex }) => {
           const changeStepState = () => {
-            let tmpArr = stage.map((item) => {
-              if (item === n) {
-                item.state = turn % 2 ? "X" : "O";
+            let newStage = stage.map((item, idx) => {
+              if (idx === stageIndex) {
+                item = turn % 2 ? "X" : "O";
                 turn++;
               }
               return item;
             });
-            setStage(tmpArr);
+
+            setStage(newStage);
+            return newStage;
           };
 
-          const isGameOver = () => {
-            if (stage.every((n) => n.state !== "")) {
-              Swal.fire({ title: "平局!" });
-            }
+          const showWin = (winner) =>
+            Swal.fire({ title: winner + " 勝利!" }).then(createNewStage);
+
+          const isGameOver = (arr) => {
+            let Xarr = [];
+            let Oarr = [];
+            arr.forEach((n, index) => {
+              if (n === "X") Xarr.push(index);
+              if (n === "O") Oarr.push(index);
+            });
+
+            if (arr.every((n) => n !== ""))
+              Swal.fire({ title: "平局!" }).then(createNewStage);
           };
 
           const doClick = () => {
-            changeStepState();
-            isGameOver();
+            const newStage = changeStepState();
+            isGameOver(newStage);
           };
 
           return (
             <button
-              key={n}
+              key={stageIndex}
               className="btn border stage-btn"
               onClick={doClick}
-              disabled={n.state}
+              disabled={n}
             >
-              {n.state}
+              {n}
             </button>
           );
         };
@@ -113,11 +116,11 @@
         const Stage = () => {
           return (
             <div>
-              {stage.map((n) => {
+              {stage.map((n, stageIndex) => {
                 return (
                   <span>
-                    <Step n={n} />
-                    {n.x === row && <br />}
+                    <Step n={n} stageIndex={stageIndex} />
+                    {stageIndex % 3 === 2 && <br />}
                   </span>
                 );
               })}
@@ -128,7 +131,7 @@
         return (
           <div className="mt-5 d-flex justify-content-center align-items-center flex-column">
             <Stage />
-            <button className="mt-5 btn bg-warning" onClick={createNewStage}>
+            <button className="mt-5 btn btn-primary" onClick={createNewStage}>
               Reset
             </button>
           </div>
