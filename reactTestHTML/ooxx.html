@@ -38,7 +38,7 @@
       .stage-btn {
         width: 100px;
         height: 100px;
-        font-size: xx-large;
+        font-size: 50px;
       }
     </style>
   </head>
@@ -84,7 +84,29 @@
           const showWin = (winner) =>
             Swal.fire({ title: winner + " 勝利!" }).then(createNewStage);
 
-          const isGameOver = (arr) => {
+          const someOneWin = (who, arr) => {
+            //row [0,1,2] [3,4,5] [6,7,8]
+            //col [0,3,6] [1,4,7] [2,5,8]
+            //斜 [0,4,8] [2,4,6]
+
+            if (arr.includes(0)) {
+              if (arr.includes(1) && arr.includes(2)) return showWin(who);
+              if (arr.includes(3) && arr.includes(6)) return showWin(who);
+              if (arr.includes(4) && arr.includes(8)) return showWin(who);
+            }
+            if (arr.includes(2)) {
+              if (arr.includes(5) && arr.includes(8)) return showWin(who);
+              if (arr.includes(4) && arr.includes(6)) return showWin(who);
+            }
+            if (arr.includes(1) && arr.includes(4) && arr.includes(7))
+              return showWin(who);
+            if (arr.includes(3) && arr.includes(4) && arr.includes(5))
+              return showWin(who);
+            if (arr.includes(6) && arr.includes(7) && arr.includes(8))
+              return showWin(who);
+          };
+
+          const mainJudgeGame = (arr) => {
             let Xarr = [];
             let Oarr = [];
             arr.forEach((n, index) => {
@@ -92,13 +114,16 @@
               if (n === "O") Oarr.push(index);
             });
 
+            someOneWin("X", Xarr);
+            someOneWin("O", Oarr);
+
             if (arr.every((n) => n !== ""))
               Swal.fire({ title: "平局!" }).then(createNewStage);
           };
 
           const doClick = () => {
             const newStage = changeStepState();
-            isGameOver(newStage);
+            mainJudgeGame(newStage);
           };
 
           return (
